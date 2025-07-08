@@ -4,7 +4,21 @@ import { motion } from 'framer-motion';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../../common/SafeIcon';
 
-const { FiHome, FiTarget, FiUsers, FiCalendar, FiDollarSign, FiMapPin, FiClock, FiMail, FiPlane, FiCoffee, FiTruck, FiShield, FiBookOpen } = FiIcons;
+const {
+  FiHome,
+  FiTarget,
+  FiUsers,
+  FiCalendar,
+  FiDollarSign,
+  FiMapPin,
+  FiClock,
+  FiMail,
+  FiPlane,
+  FiCoffee,
+  FiTruck,
+  FiShield,
+  FiBookOpen
+} = FiIcons;
 
 const Sidebar = () => {
   const location = useLocation();
@@ -24,11 +38,11 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="w-64 bg-white shadow-lg">
+    <div className="w-64 bg-white dark:bg-gray-800 shadow-lg transition-colors duration-200">
       <div className="p-6">
         <div className="flex items-center space-x-2">
-          <SafeIcon icon={FiHome} className="text-2xl text-primary-600" />
-          <h1 className="text-xl font-bold text-gray-800">Reunion Planner</h1>
+          <SafeIcon icon={FiHome} className="text-2xl text-primary-600 dark:text-primary-400" />
+          <h1 className="text-xl font-bold text-gray-800 dark:text-white">Reunion Planner</h1>
         </div>
       </div>
 
@@ -39,8 +53,8 @@ const Sidebar = () => {
             className={({ isActive }) =>
               `flex items-center space-x-3 px-3 py-2 rounded-md transition-colors ${
                 isActive
-                  ? 'bg-primary-50 text-primary-700 border-r-2 border-primary-600'
-                  : 'text-gray-600 hover:bg-gray-50'
+                  ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 border-r-2 border-primary-600 dark:border-primary-400'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
               }`
             }
           >
@@ -50,7 +64,7 @@ const Sidebar = () => {
         </div>
 
         <div className="px-6">
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+          <h2 className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">
             Chapters
           </h2>
           <div className="space-y-1">
@@ -65,8 +79,8 @@ const Sidebar = () => {
                   className={({ isActive }) =>
                     `flex items-center space-x-3 px-3 py-2 rounded-md transition-colors group ${
                       isActive
-                        ? 'bg-primary-50 text-primary-700 border-r-2 border-primary-600'
-                        : 'text-gray-600 hover:bg-gray-50'
+                        ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 border-r-2 border-primary-600 dark:border-primary-400'
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
                     }`
                   }
                 >

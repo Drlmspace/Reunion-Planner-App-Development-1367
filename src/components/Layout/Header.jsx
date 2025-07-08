@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useReunion } from '../../contexts/ReunionContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import Button from '../UI/Button';
 import Input from '../UI/Input';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../../common/SafeIcon';
 import { motion } from 'framer-motion';
 
-const { FiUser, FiLogOut, FiSettings, FiEdit3, FiSave, FiX, FiShield } = FiIcons;
+const { FiUser, FiLogOut, FiSettings, FiEdit3, FiSave, FiX, FiShield, FiMoon, FiSun } = FiIcons;
 
 const Header = () => {
   const { user, signOut } = useAuth();
   const { currentReunion, updateReunion } = useReunion();
+  const { theme, toggleTheme, isDark } = useTheme();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [editTitle, setEditTitle] = useState(currentReunion?.title || '');
@@ -43,7 +45,7 @@ const Header = () => {
   const isAdmin = user?.role === 'admin' || user?.user_metadata?.role === 'admin';
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
+    <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
       <div className="px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex-1">
@@ -68,7 +70,7 @@ const Header = () => {
               </motion.div>
             ) : (
               <div className="flex items-center space-x-3">
-                <h1 className="text-2xl font-bold text-gray-900">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                   {currentReunion ? currentReunion.title : 'Select a Reunion'}
                 </h1>
                 {currentReunion && (
@@ -76,7 +78,7 @@ const Header = () => {
                     variant="ghost"
                     size="small"
                     onClick={() => setIsEditingTitle(true)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                   >
                     <SafeIcon icon={FiEdit3} />
                   </Button>
@@ -96,9 +98,9 @@ const Header = () => {
                       type="date"
                       value={editDate}
                       onChange={(e) => setEditDate(e.target.value)}
-                      className="px-2 py-1 border border-gray-300 rounded text-sm"
+                      className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
-                    <span className="text-sm text-gray-600">• {currentReunion.type}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">• {currentReunion.type}</span>
                     <Button variant="ghost" size="small" onClick={handleSaveDate}>
                       <SafeIcon icon={FiSave} className="text-green-600" />
                     </Button>
@@ -108,7 +110,7 @@ const Header = () => {
                   </motion.div>
                 ) : (
                   <div className="flex items-center space-x-2">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       {currentReunion.type} •{' '}
                       {currentReunion.planned_date
                         ? new Date(currentReunion.planned_date).toLocaleDateString()
@@ -118,7 +120,7 @@ const Header = () => {
                       variant="ghost"
                       size="small"
                       onClick={() => setIsEditingDate(true)}
-                      className="text-gray-400 hover:text-gray-600"
+                      className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                     >
                       <SafeIcon icon={FiEdit3} />
                     </Button>
@@ -130,21 +132,31 @@ const Header = () => {
 
           <div className="flex items-center space-x-4">
             {user && (
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                 <SafeIcon
                   icon={isAdmin ? FiShield : FiUser}
-                  className={`text-lg ${isAdmin ? 'text-blue-600' : ''}`}
+                  className={`text-lg ${isAdmin ? 'text-blue-600 dark:text-blue-400' : ''}`}
                 />
                 <span>
                   {isAdmin ? 'Administrator' : user?.email}
                   {isAdmin && (
-                    <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                    <span className="ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full">
                       Admin
                     </span>
                   )}
                 </span>
               </div>
             )}
+
+            <Button
+              onClick={toggleTheme}
+              variant="ghost"
+              size="small"
+              className="flex items-center space-x-2"
+            >
+              <SafeIcon icon={isDark ? FiSun : FiMoon} className="text-lg" />
+              <span className="hidden sm:inline">{isDark ? 'Light' : 'Dark'}</span>
+            </Button>
 
             <Button
               variant="ghost"

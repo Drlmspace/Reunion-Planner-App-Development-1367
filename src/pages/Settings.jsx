@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useReunion } from '../contexts/ReunionContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { isSupabaseAvailable } from '../lib/supabase';
 import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
@@ -10,11 +11,27 @@ import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
 import toast from 'react-hot-toast';
 
-const { FiSettings, FiUser, FiBell, FiDatabase, FiEye, FiSave, FiTrash2, FiDownload, FiUpload, FiRefreshCw, FiShield, FiMoon, FiSun, FiGlobe } = FiIcons;
+const {
+  FiSettings,
+  FiUser,
+  FiBell,
+  FiDatabase,
+  FiEye,
+  FiSave,
+  FiTrash2,
+  FiDownload,
+  FiUpload,
+  FiRefreshCw,
+  FiShield,
+  FiMoon,
+  FiSun,
+  FiGlobe
+} = FiIcons;
 
 const Settings = () => {
   const { user } = useAuth();
   const { currentReunion, reunions, updateReunion } = useReunion();
+  const { theme, setTheme, toggleTheme, isDark, isLight } = useTheme();
   const [activeTab, setActiveTab] = useState('account');
   const [loading, setLoading] = useState(false);
 
@@ -29,12 +46,17 @@ const Settings = () => {
 
   // App preferences state
   const [preferences, setPreferences] = useState({
-    theme: localStorage.getItem('theme') || 'light',
+    theme: theme,
     currency: localStorage.getItem('currency') || 'USD',
     dateFormat: localStorage.getItem('dateFormat') || 'MM/DD/YYYY',
     language: localStorage.getItem('language') || 'en',
     autoSave: localStorage.getItem('autoSave') !== 'false'
   });
+
+  // Update preferences when theme changes
+  useEffect(() => {
+    setPreferences(prev => ({ ...prev, theme }));
+  }, [theme]);
 
   // Notification settings state
   const [notifications, setNotifications] = useState({
@@ -131,12 +153,8 @@ const Settings = () => {
       localStorage.setItem(key, value.toString());
     });
 
-    // Apply theme immediately
-    if (preferences.theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    // Apply theme change
+    setTheme(preferences.theme);
 
     toast.success('Preferences saved successfully!');
   };
@@ -223,7 +241,7 @@ const Settings = () => {
 
       keysToRemove.forEach(key => localStorage.removeItem(key));
       toast.success('All data cleared successfully! Please refresh the page.');
-      
+
       // Refresh after a short delay
       setTimeout(() => {
         window.location.reload();
@@ -257,6 +275,9 @@ const Settings = () => {
         dataRetention: '2years'
       });
 
+      // Reset theme to light
+      setTheme('light');
+
       toast.success('Settings reset to defaults');
     }
   };
@@ -266,18 +287,27 @@ const Settings = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Settings</h1>
+          <p className="text-gray-600 dark:text-gray-300 mt-1">
             Manage your account, reunion settings, and preferences.
           </p>
         </div>
         <div className="flex items-center space-x-4">
-          <SafeIcon icon={FiSettings} className="text-2xl text-blue-600" />
+          <SafeIcon icon={FiSettings} className="text-2xl text-blue-600 dark:text-blue-400" />
+          <Button
+            onClick={toggleTheme}
+            variant="outline"
+            size="small"
+            className="flex items-center space-x-2"
+          >
+            <SafeIcon icon={isDark ? FiSun : FiMoon} />
+            <span>{isDark ? 'Light' : 'Dark'}</span>
+          </Button>
         </div>
       </div>
 
       {/* Tab Navigation */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-gray-200 dark:border-gray-700">
         <nav className="-mb-px flex space-x-8">
           {tabs.map((tab) => (
             <button
@@ -285,8 +315,8 @@ const Settings = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${
                 activeTab === tab.id
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
               }`}
             >
               <SafeIcon icon={tab.icon} />
@@ -304,7 +334,7 @@ const Settings = () => {
           className="space-y-6"
         >
           <Card>
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Account Information</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Account Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input
                 label="First Name"
@@ -332,13 +362,13 @@ const Settings = () => {
                 placeholder="Your phone number"
               />
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Time Zone
                 </label>
                 <select
                   value={accountData.timezone}
                   onChange={(e) => setAccountData({ ...accountData, timezone: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
                   <option value="America/New_York">Eastern Time</option>
                   <option value="America/Chicago">Central Time</option>
@@ -372,7 +402,7 @@ const Settings = () => {
           className="space-y-6"
         >
           <Card>
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
               Current Reunion Settings
             </h2>
             {currentReunion ? (
@@ -384,13 +414,13 @@ const Settings = () => {
                     onChange={(e) => setReunionSettings({ ...reunionSettings, title: e.target.value })}
                   />
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Reunion Type
                     </label>
                     <select
                       value={reunionSettings.type}
                       onChange={(e) => setReunionSettings({ ...reunionSettings, type: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                     >
                       <option value="family">Family Reunion</option>
                       <option value="class">Class Reunion</option>
@@ -430,7 +460,7 @@ const Settings = () => {
                       onChange={(e) => setReunionSettings({ ...reunionSettings, allowGuestInvites: e.target.checked })}
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
-                    <label htmlFor="allowGuestInvites" className="text-sm text-gray-700">
+                    <label htmlFor="allowGuestInvites" className="text-sm text-gray-700 dark:text-gray-300">
                       Allow attendees to bring guests
                     </label>
                   </div>
@@ -442,7 +472,7 @@ const Settings = () => {
                       onChange={(e) => setReunionSettings({ ...reunionSettings, isPublic: e.target.checked })}
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
-                    <label htmlFor="isPublic" className="text-sm text-gray-700">
+                    <label htmlFor="isPublic" className="text-sm text-gray-700 dark:text-gray-300">
                       Make reunion publicly discoverable
                     </label>
                   </div>
@@ -458,8 +488,8 @@ const Settings = () => {
               </div>
             ) : (
               <div className="text-center py-8">
-                <p className="text-gray-500 mb-4">No reunion selected</p>
-                <p className="text-sm text-gray-400">Create or select a reunion to configure its settings</p>
+                <p className="text-gray-500 dark:text-gray-400 mb-4">No reunion selected</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500">Create or select a reunion to configure its settings</p>
               </div>
             )}
           </Card>
@@ -474,7 +504,7 @@ const Settings = () => {
           className="space-y-6"
         >
           <Card>
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Notification Preferences</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Notification Preferences</h2>
             <div className="space-y-4">
               {[
                 { key: 'emailNotifications', label: 'Email Notifications', desc: 'Receive updates via email' },
@@ -484,7 +514,7 @@ const Settings = () => {
                 { key: 'budgetAlerts', label: 'Budget Alerts', desc: 'Notifications when budget limits are exceeded' },
                 { key: 'rsvpUpdates', label: 'RSVP Updates', desc: 'Notifications when people respond to invitations' }
               ].map((setting) => (
-                <div key={setting.key} className="flex items-start space-x-3 p-4 border rounded-lg">
+                <div key={setting.key} className="flex items-start space-x-3 p-4 border dark:border-gray-600 rounded-lg">
                   <input
                     type="checkbox"
                     id={setting.key}
@@ -493,10 +523,10 @@ const Settings = () => {
                     className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   <div className="flex-1">
-                    <label htmlFor={setting.key} className="font-medium text-gray-900">
+                    <label htmlFor={setting.key} className="font-medium text-gray-900 dark:text-white">
                       {setting.label}
                     </label>
-                    <p className="text-sm text-gray-600">{setting.desc}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{setting.desc}</p>
                   </div>
                 </div>
               ))}
@@ -522,17 +552,19 @@ const Settings = () => {
           className="space-y-6"
         >
           <Card>
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">App Preferences</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">App Preferences</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Theme
                 </label>
                 <div className="flex items-center space-x-4">
                   <button
                     onClick={() => setPreferences({ ...preferences, theme: 'light' })}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg border ${
-                      preferences.theme === 'light' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg border transition-colors ${
+                      preferences.theme === 'light'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                        : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800'
                     }`}
                   >
                     <SafeIcon icon={FiSun} />
@@ -540,8 +572,10 @@ const Settings = () => {
                   </button>
                   <button
                     onClick={() => setPreferences({ ...preferences, theme: 'dark' })}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg border ${
-                      preferences.theme === 'dark' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg border transition-colors ${
+                      preferences.theme === 'dark'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                        : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800'
                     }`}
                   >
                     <SafeIcon icon={FiMoon} />
@@ -550,13 +584,13 @@ const Settings = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Currency
                 </label>
                 <select
                   value={preferences.currency}
                   onChange={(e) => setPreferences({ ...preferences, currency: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
                   <option value="USD">USD ($)</option>
                   <option value="EUR">EUR (€)</option>
@@ -566,13 +600,13 @@ const Settings = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Date Format
                 </label>
                 <select
                   value={preferences.dateFormat}
                   onChange={(e) => setPreferences({ ...preferences, dateFormat: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
                   <option value="MM/DD/YYYY">MM/DD/YYYY</option>
                   <option value="DD/MM/YYYY">DD/MM/YYYY</option>
@@ -580,13 +614,13 @@ const Settings = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Language
                 </label>
                 <select
                   value={preferences.language}
                   onChange={(e) => setPreferences({ ...preferences, language: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
                   <option value="en">English</option>
                   <option value="es">Español</option>
@@ -604,7 +638,7 @@ const Settings = () => {
                   onChange={(e) => setPreferences({ ...preferences, autoSave: e.target.checked })}
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <label htmlFor="autoSave" className="text-sm text-gray-700">
+                <label htmlFor="autoSave" className="text-sm text-gray-700 dark:text-gray-300">
                   Enable auto-save for forms
                 </label>
               </div>
@@ -638,16 +672,16 @@ const Settings = () => {
           className="space-y-6"
         >
           <Card>
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Privacy Settings</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Privacy Settings</h2>
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Profile Visibility
                 </label>
                 <select
                   value={privacySettings.profileVisibility}
                   onChange={(e) => setPrivacySettings({ ...privacySettings, profileVisibility: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
                   <option value="public">Public - Anyone can see my profile</option>
                   <option value="reunion">Reunion Members - Only reunion participants</option>
@@ -655,13 +689,13 @@ const Settings = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Data Retention
                 </label>
                 <select
                   value={privacySettings.dataRetention}
                   onChange={(e) => setPrivacySettings({ ...privacySettings, dataRetention: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
                   <option value="1year">1 Year</option>
                   <option value="2years">2 Years</option>
@@ -674,7 +708,7 @@ const Settings = () => {
                   { key: 'shareContactInfo', label: 'Share Contact Information', desc: 'Allow other reunion members to see your contact details' },
                   { key: 'allowMessages', label: 'Allow Messages', desc: 'Let other members send you messages through the app' }
                 ].map((setting) => (
-                  <div key={setting.key} className="flex items-start space-x-3 p-4 border rounded-lg">
+                  <div key={setting.key} className="flex items-start space-x-3 p-4 border dark:border-gray-600 rounded-lg">
                     <input
                       type="checkbox"
                       id={setting.key}
@@ -683,10 +717,10 @@ const Settings = () => {
                       className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <div className="flex-1">
-                      <label htmlFor={setting.key} className="font-medium text-gray-900">
+                      <label htmlFor={setting.key} className="font-medium text-gray-900 dark:text-white">
                         {setting.label}
                       </label>
-                      <p className="text-sm text-gray-600">{setting.desc}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{setting.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -713,19 +747,18 @@ const Settings = () => {
           className="space-y-6"
         >
           <Card>
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Data Management</h2>
-
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Data Management</h2>
             {/* Connection Status */}
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">Connection Status</h3>
+            <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <h3 className="font-medium text-gray-900 dark:text-white mb-2">Connection Status</h3>
               <div className="flex items-center space-x-2">
                 <div className={`w-3 h-3 rounded-full ${isSupabaseAvailable ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
                   {isSupabaseAvailable ? 'Connected to Supabase Backend' : 'Running in Local Storage Mode'}
                 </span>
               </div>
               {!isSupabaseAvailable && (
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Data is stored locally in your browser. Connect Supabase for cloud storage.
                 </p>
               )}
@@ -733,11 +766,11 @@ const Settings = () => {
 
             {/* Data Export/Import */}
             <div className="space-y-4">
-              <h3 className="font-medium text-gray-900">Backup & Restore</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white">Backup & Restore</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 border rounded-lg">
-                  <h4 className="font-medium text-gray-900 mb-2">Export Data</h4>
-                  <p className="text-sm text-gray-600 mb-3">
+                <div className="p-4 border dark:border-gray-600 rounded-lg">
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">Export Data</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                     Download all your reunion data as a JSON file for backup purposes.
                   </p>
                   <Button
@@ -749,9 +782,9 @@ const Settings = () => {
                     <span>Export Data</span>
                   </Button>
                 </div>
-                <div className="p-4 border rounded-lg">
-                  <h4 className="font-medium text-gray-900 mb-2">Import Data</h4>
-                  <p className="text-sm text-gray-600 mb-3">
+                <div className="p-4 border dark:border-gray-600 rounded-lg">
+                  <h4 className="font-medium text-gray-900 dark:text-white mb-2">Import Data</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                     Restore your data from a previously exported backup file.
                   </p>
                   <label className="block">
@@ -775,19 +808,20 @@ const Settings = () => {
             </div>
 
             {/* Storage Info */}
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-medium text-blue-900 mb-2">Storage Information</h3>
-              <div className="space-y-1 text-sm text-blue-800">
+            <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Storage Information</h3>
+              <div className="space-y-1 text-sm text-blue-800 dark:text-blue-200">
                 <p>• Total Reunions: {reunions.length}</p>
                 <p>• Storage Used: ~{Math.round(JSON.stringify(reunions).length / 1024)} KB</p>
                 <p>• Last Backup: {localStorage.getItem('lastBackup') || 'Never'}</p>
+                <p>• Current Theme: {isDark ? 'Dark' : 'Light'} Mode</p>
               </div>
             </div>
 
             {/* Danger Zone */}
-            <div className="mt-8 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <h3 className="font-medium text-red-900 mb-2">Danger Zone</h3>
-              <p className="text-sm text-red-700 mb-4">
+            <div className="mt-8 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <h3 className="font-medium text-red-900 dark:text-red-100 mb-2">Danger Zone</h3>
+              <p className="text-sm text-red-700 dark:text-red-300 mb-4">
                 These actions are irreversible. Please be certain before proceeding.
               </p>
               <Button
