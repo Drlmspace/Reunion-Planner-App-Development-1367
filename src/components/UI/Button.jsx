@@ -11,19 +11,20 @@ const Button = ({
   fullWidth = false, 
   onClick, 
   type = 'button', 
-  className = '', 
+  className = '',
   ...props 
 }) => {
-  const baseClasses = 'font-medium rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed btn-hover-lift';
-
+  const baseClasses = 'font-medium rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed btn-hover-lift relative overflow-hidden';
+  
   const variantClasses = {
-    primary: 'gradient-bg text-white hover:shadow-lg focus:ring-blue-500',
+    primary: 'gradient-neon-1 text-white hover:shadow-lg focus:ring-pink-500',
     secondary: 'glass-card text-white hover:bg-white/20 focus:ring-white/50',
-    outline: 'border-2 border-white/30 text-white hover:bg-white/10 focus:ring-white/50',
+    outline: 'border-2 border-white/30 text-white hover:bg-white/10 focus:ring-white/50 glow-border',
     glass: 'glass-card text-white hover:bg-white/20 focus:ring-white/50',
-    danger: 'gradient-bg-2 text-white hover:shadow-lg focus:ring-pink-500',
+    danger: 'gradient-neon-2 text-white hover:shadow-lg focus:ring-red-500',
     success: 'gradient-bg-4 text-white hover:shadow-lg focus:ring-green-500',
-    gradient: 'gradient-bg-3 text-white hover:shadow-lg focus:ring-cyan-500'
+    gradient: 'gradient-neon-3 text-white hover:shadow-lg focus:ring-blue-500',
+    funky: 'btn-funky'
   };
 
   const sizeClasses = {
@@ -36,7 +37,10 @@ const Button = ({
 
   return (
     <motion.button
-      whileHover={{ scale: disabled ? 1 : 1.02 }}
+      whileHover={{ 
+        scale: disabled ? 1 : 1.02,
+        boxShadow: disabled ? undefined : "0 10px 25px rgba(0, 0, 0, 0.2)"
+      }}
       whileTap={{ scale: disabled ? 1 : 0.98 }}
       type={type}
       disabled={disabled || loading}
@@ -44,14 +48,24 @@ const Button = ({
       className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${widthClasses} ${className}`}
       {...props}
     >
-      {loading ? (
-        <div className="flex items-center justify-center">
-          <LoadingSpinner size="small" color="white" />
-          <span className="ml-2">Loading...</span>
-        </div>
-      ) : (
-        children
-      )}
+      {/* Shine effect */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+        initial={{ x: '-100%' }}
+        whileHover={{ x: '100%' }}
+        transition={{ duration: 0.6 }}
+      />
+      
+      <div className="relative z-10 flex items-center justify-center">
+        {loading ? (
+          <div className="flex items-center justify-center space-x-2">
+            <div className="spinner-rainbow" style={{ width: '16px', height: '16px' }} />
+            <span>Loading...</span>
+          </div>
+        ) : (
+          children
+        )}
+      </div>
     </motion.button>
   );
 };
