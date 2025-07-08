@@ -18,9 +18,9 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(-45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3);
+  background: linear-gradient(-45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460, #000000, #1a1a1a);
   background-size: 400% 400%;
-  animation: gradientParty 20s ease infinite;
+  animation: gradientShift 20s ease infinite;
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -30,8 +30,8 @@ body {
   min-height: 100vh;
 }
 
-/* Party gradient animation */
-@keyframes gradientParty {
+/* Cleveland Black Excellence gradient animation */
+@keyframes gradientShift {
   0% { background-position: 0% 50%; }
   25% { background-position: 100% 50%; }
   50% { background-position: 100% 100%; }
@@ -39,17 +39,17 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* Enhanced Glassmorphism Effects */
+/* Enhanced Glassmorphism Effects with Cleveland theme */
 .glass-card {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(26, 26, 46, 0.25);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 215, 0, 0.2);
   border-radius: 25px;
   box-shadow: 
-    0 15px 35px rgba(0, 0, 0, 0.1),
-    0 5px 15px rgba(0, 0, 0, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    0 15px 35px rgba(0, 0, 0, 0.3),
+    0 5px 15px rgba(255, 215, 0, 0.1),
+    inset 0 1px 0 rgba(255, 215, 0, 0.2);
   position: relative;
   overflow: hidden;
 }
@@ -61,7 +61,7 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.15), transparent);
   transition: left 0.5s;
 }
 
@@ -70,75 +70,75 @@ body {
 }
 
 .glass-card-dark {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
-  border: 2px solid rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 215, 0, 0.15);
   border-radius: 25px;
   box-shadow: 
-    0 15px 35px rgba(0, 0, 0, 0.3),
-    0 5px 15px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 15px 35px rgba(0, 0, 0, 0.5),
+    0 5px 15px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 215, 0, 0.1);
 }
 
-/* Vibrant gradient backgrounds */
+/* Cleveland Black Excellence gradient backgrounds */
 .gradient-bg {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
   position: relative;
   overflow: hidden;
 }
 
 .gradient-bg-2 {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
   position: relative;
   overflow: hidden;
 }
 
 .gradient-bg-3 {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, #228b22 0%, #006400 100%);
   position: relative;
   overflow: hidden;
 }
 
 .gradient-bg-4 {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
   position: relative;
   overflow: hidden;
 }
 
 .gradient-bg-5 {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  background: linear-gradient(135deg, #dc143c 0%, #ff1493 100%);
   position: relative;
   overflow: hidden;
 }
 
 .gradient-bg-6 {
-  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  background: linear-gradient(135deg, #228b22 0%, #32cd32 100%);
   position: relative;
   overflow: hidden;
 }
 
-/* Neon gradient effects */
+/* Cleveland themed neon gradients */
 .gradient-neon-1 {
-  background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
-  box-shadow: 0 0 30px rgba(255, 0, 110, 0.3);
+  background: linear-gradient(135deg, #ffd700, #daa520, #b8860b);
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
 }
 
 .gradient-neon-2 {
-  background: linear-gradient(135deg, #06ffa5, #00d4ff, #7209b7);
-  box-shadow: 0 0 30px rgba(6, 255, 165, 0.3);
+  background: linear-gradient(135deg, #dc143c, #b22222, #8b0000);
+  box-shadow: 0 0 30px rgba(220, 20, 60, 0.4);
 }
 
 .gradient-neon-3 {
-  background: linear-gradient(135deg, #ffbe0b, #fb5607, #ff006e);
-  box-shadow: 0 0 30px rgba(255, 190, 11, 0.3);
+  background: linear-gradient(135deg, #228b22, #32cd32, #006400);
+  box-shadow: 0 0 30px rgba(34, 139, 34, 0.4);
 }
 
-/* Party background animation */
+/* Animated background with Cleveland colors */
 .animated-gradient {
-  background: linear-gradient(-45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3, #a8e6cf, #ff8a80);
+  background: linear-gradient(-45deg, #0a0a0a, #1a1a2e, #ffd700, #dc143c, #228b22, #000000, #16213e, #0f3460);
   background-size: 400% 400%;
-  animation: gradientParty 15s ease infinite;
+  animation: gradientShift 15s ease infinite;
   position: relative;
 }
 
@@ -149,7 +149,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffd700' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   animation: patternFloat 30s linear infinite;
 }
 
@@ -184,7 +184,7 @@ body {
   50% { transform: translateY(-20px) scale(1.05); }
 }
 
-/* Enhanced pulse effects */
+/* Enhanced pulse effects with Cleveland colors */
 .pulse-glow {
   animation: pulseGlow 2s ease-in-out infinite;
 }
@@ -195,21 +195,20 @@ body {
 
 @keyframes pulseGlow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 40px rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
     transform: scale(1.05);
   }
 }
 
 @keyframes pulseRainbow {
-  0% { box-shadow: 0 0 20px #ff006e; }
-  25% { box-shadow: 0 0 30px #8338ec; }
-  50% { box-shadow: 0 0 40px #3a86ff; }
-  75% { box-shadow: 0 0 30px #06ffa5; }
-  100% { box-shadow: 0 0 20px #ff006e; }
+  0% { box-shadow: 0 0 20px #ffd700; }
+  33% { box-shadow: 0 0 30px #dc143c; }
+  66% { box-shadow: 0 0 40px #228b22; }
+  100% { box-shadow: 0 0 20px #ffd700; }
 }
 
 /* Bouncy animations */
@@ -265,31 +264,31 @@ body {
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* Custom scrollbar with style */
+/* Custom scrollbar with Cleveland theme */
 ::-webkit-scrollbar {
   width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(26, 26, 46, 0.3);
   border-radius: 20px;
   margin: 5px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+  background: linear-gradient(135deg, #ffd700, #dc143c);
   border-radius: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 215, 0, 0.2);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #ff5252, #26a69a);
-  box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+  background: linear-gradient(135deg, #b8860b, #8b0000);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
-/* Enhanced text effects */
+/* Enhanced text effects with Cleveland colors */
 .text-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ffd700 0%, #dc143c 50%, #228b22 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -297,7 +296,7 @@ body {
 }
 
 .text-gradient-rainbow {
-  background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #06ffa5, #ffbe0b);
+  background: linear-gradient(135deg, #ffd700, #dc143c, #228b22, #b8860b, #8b0000);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -307,25 +306,25 @@ body {
 
 @keyframes textShimmer {
   0%, 100% { filter: hue-rotate(0deg); }
-  50% { filter: hue-rotate(45deg); }
+  50% { filter: hue-rotate(15deg); }
 }
 
 .text-white-glass {
   color: rgba(255, 255, 255, 0.95);
   text-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.1),
-    0 1px 2px rgba(0, 0, 0, 0.2);
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(255, 215, 0, 0.2);
   font-weight: 600;
 }
 
 .text-shadow-fun {
   text-shadow: 
-    3px 3px 0px #ff006e,
-    6px 6px 0px #8338ec,
-    9px 9px 0px #3a86ff;
+    3px 3px 0px #ffd700,
+    6px 6px 0px #dc143c,
+    9px 9px 0px #228b22;
 }
 
-/* Enhanced button effects */
+/* Enhanced button effects with Cleveland theme */
 .btn-hover-lift {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -339,15 +338,15 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
   transition: left 0.5s;
 }
 
 .btn-hover-lift:hover {
   transform: translateY(-4px) scale(1.02);
   box-shadow: 
-    0 15px 30px rgba(0, 0, 0, 0.2),
-    0 5px 15px rgba(0, 0, 0, 0.1);
+    0 15px 30px rgba(0, 0, 0, 0.4),
+    0 5px 15px rgba(255, 215, 0, 0.2);
 }
 
 .btn-hover-lift:hover::before {
@@ -358,9 +357,9 @@ body {
   transform: translateY(-2px) scale(1.01);
 }
 
-/* Funky button styles */
+/* Cleveland themed funky button styles */
 .btn-funky {
-  background: linear-gradient(135deg, #ff006e, #8338ec);
+  background: linear-gradient(135deg, #ffd700, #dc143c);
   border: none;
   border-radius: 25px;
   padding: 12px 24px;
@@ -373,11 +372,12 @@ body {
   text-transform: uppercase;
   letter-spacing: 1px;
   font-size: 0.9rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .btn-funky:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(255, 0, 110, 0.4);
+  box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
 }
 
 .btn-funky:active {
@@ -408,15 +408,15 @@ body {
 .card-hover-scale:hover {
   transform: scale(1.03) translateY(-5px);
   box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.15),
-    0 10px 20px rgba(0, 0, 0, 0.1);
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 10px 20px rgba(255, 215, 0, 0.1);
 }
 
-/* Glowing borders */
+/* Glowing borders with Cleveland theme */
 .glow-border {
   border: 2px solid transparent;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) padding-box,
-              linear-gradient(135deg, #ff006e, #8338ec, #3a86ff) border-box;
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.2), rgba(0, 0, 0, 0.1)) padding-box,
+              linear-gradient(135deg, #ffd700, #dc143c, #228b22) border-box;
   animation: glowRotate 3s linear infinite;
 }
 
@@ -438,27 +438,26 @@ body {
   75% { transform: translateY(-15px) rotate(-5deg); }
 }
 
-/* Loading spinner with style */
+/* Loading spinner with Cleveland theme */
 .spinner-rainbow {
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(255, 255, 255, 0.1);
-  border-left: 4px solid #ff006e;
+  border: 4px solid rgba(255, 215, 0, 0.2);
+  border-left: 4px solid #ffd700;
   border-radius: 50%;
   animation: spinRainbow 1s linear infinite;
 }
 
 @keyframes spinRainbow {
-  0% { transform: rotate(0deg); border-left-color: #ff006e; }
-  25% { border-left-color: #8338ec; }
-  50% { transform: rotate(180deg); border-left-color: #3a86ff; }
-  75% { border-left-color: #06ffa5; }
-  100% { transform: rotate(360deg); border-left-color: #ff006e; }
+  0% { transform: rotate(0deg); border-left-color: #ffd700; }
+  33% { border-left-color: #dc143c; }
+  66% { transform: rotate(180deg); border-left-color: #228b22; }
+  100% { transform: rotate(360deg); border-left-color: #ffd700; }
 }
 
-/* Progress bar with rainbow effect */
+/* Progress bar with Cleveland theme */
 .progress-rainbow {
-  background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff, #06ffa5);
+  background: linear-gradient(90deg, #ffd700, #dc143c, #228b22, #b8860b);
   background-size: 200% 100%;
   animation: progressFlow 2s ease-in-out infinite;
 }
@@ -468,16 +467,22 @@ body {
   100% { background-position: -200% 0; }
 }
 
-/* Notification styles */
+/* Notification styles with Cleveland theme */
 .notification-success {
-  background: linear-gradient(135deg, #43e97b, #38f9d7);
-  border-left: 5px solid #00ff88;
+  background: linear-gradient(135deg, #228b22, #32cd32);
+  border-left: 5px solid #006400;
   animation: slideInRight 0.5s ease-out;
 }
 
 .notification-error {
-  background: linear-gradient(135deg, #ff006e, #ff4081);
-  border-left: 5px solid #ff0040;
+  background: linear-gradient(135deg, #dc143c, #ff1493);
+  border-left: 5px solid #8b0000;
+  animation: slideInRight 0.5s ease-out;
+}
+
+.notification-warning {
+  background: linear-gradient(135deg, #ffd700, #ff8c00);
+  border-left: 5px solid #b8860b;
   animation: slideInRight 0.5s ease-out;
 }
 
@@ -536,4 +541,33 @@ body {
   50% { border-radius: 20% 40% 20% 40% / 40% 20% 60% 60%; }
   75% { border-radius: 40% 60% 50% 80% / 30% 80% 40% 20%; }
   100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+}
+
+/* Cleveland excellence theme specific additions */
+.cleveland-gold {
+  color: #ffd700;
+}
+
+.cleveland-red {
+  color: #dc143c;
+}
+
+.cleveland-green {
+  color: #228b22;
+}
+
+.bg-cleveland-dark {
+  background: rgba(10, 10, 10, 0.9);
+}
+
+.border-cleveland-gold {
+  border-color: #ffd700;
+}
+
+.text-cleveland-gold {
+  color: #ffd700;
+}
+
+.shadow-cleveland {
+  box-shadow: 0 10px 25px rgba(255, 215, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.3);
 }

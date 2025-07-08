@@ -32,7 +32,7 @@ const Header = () => {
 
   const notifications = [
     { id: 1, text: 'Budget updated successfully! 💰', type: 'success' },
-    { id: 2, text: 'New RSVP received from John! 🎉', type: 'info' },
+    { id: 2, text: 'New RSVP received from Marcus! 🎉', type: 'info' },
     { id: 3, text: 'Venue booking confirmation needed ⏰', type: 'warning' }
   ];
 
@@ -43,12 +43,12 @@ const Header = () => {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Animated background pattern */}
+      {/* Animated background pattern with Cleveland theme */}
       <div className="absolute inset-0 opacity-10">
         <motion.div 
           className="w-full h-full"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffd700' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='3'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
           }}
           animate={{ x: [-10, 10, -10] }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
@@ -74,10 +74,14 @@ const Header = () => {
               >
                 {currentReunion ? (
                   <>
-                    {currentReunion.title} <span className="text-lg">🎊</span>
+                    <span className="text-cleveland-gold">{currentReunion.title}</span> 
+                    <span className="text-lg ml-2">🎊</span>
                   </>
                 ) : (
-                  'Select a Reunion ✨'
+                  <>
+                    <span className="text-gradient">Select a Reunion</span> 
+                    <span className="text-lg ml-2">✨</span>
+                  </>
                 )}
               </motion.h1>
               {currentReunion && (
@@ -87,9 +91,9 @@ const Header = () => {
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
                 >
-                  <span className="capitalize">{currentReunion.type}</span>
+                  <span className="capitalize cleveland-gold">{currentReunion.type}</span>
                   <span className="text-white/50">•</span>
-                  <span>
+                  <span className="text-white/80">
                     {currentReunion.planned_date 
                       ? new Date(currentReunion.planned_date).toLocaleDateString() 
                       : 'Date TBD'
@@ -110,7 +114,7 @@ const Header = () => {
           <div className="flex items-center space-x-6">
             {/* Greeting */}
             <motion.div 
-              className="hidden md:flex items-center space-x-2 text-white/80"
+              className="hidden md:flex items-center space-x-2 text-cleveland-gold"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.4, type: "spring" }}
@@ -122,13 +126,13 @@ const Header = () => {
             <div className="relative">
               <motion.button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="w-10 h-10 rounded-full glass-card flex items-center justify-center relative"
+                className="w-10 h-10 rounded-full glass-card flex items-center justify-center relative border-cleveland-gold"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <SafeIcon icon={FiBell} className="text-lg text-white" />
+                <SafeIcon icon={FiBell} className="text-lg text-cleveland-gold" />
                 <motion.div 
-                  className="absolute -top-1 -right-1 w-5 h-5 gradient-neon-3 rounded-full flex items-center justify-center"
+                  className="absolute -top-1 -right-1 w-5 h-5 gradient-neon-2 rounded-full flex items-center justify-center"
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
@@ -144,7 +148,7 @@ const Header = () => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
                   >
-                    <h3 className="text-white font-semibold mb-3 flex items-center space-x-2">
+                    <h3 className="text-cleveland-gold font-semibold mb-3 flex items-center space-x-2">
                       <span>Notifications</span>
                       <motion.span animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 1, repeat: Infinity }}>
                         🔔
@@ -178,7 +182,7 @@ const Header = () => {
                 <SafeIcon icon={FiUser} className="text-sm text-white" />
               </motion.div>
               <div className="hidden md:block">
-                <span className="text-sm font-medium">{user?.email}</span>
+                <span className="text-sm font-medium text-cleveland-gold">{user?.email}</span>
                 <motion.div 
                   className="flex items-center space-x-1"
                   initial={{ opacity: 0 }}
@@ -211,9 +215,9 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Floating elements */}
+      {/* Floating elements with Cleveland colors */}
       <motion.div
-        className="absolute top-4 left-1/4 w-2 h-2 gradient-neon-1 rounded-full opacity-60"
+        className="absolute top-4 left-1/4 w-2 h-2 bg-cleveland-gold rounded-full opacity-60"
         animate={{ 
           y: [-10, 10, -10],
           opacity: [0.6, 1, 0.6]
@@ -221,12 +225,20 @@ const Header = () => {
         transition={{ duration: 3, repeat: Infinity }}
       />
       <motion.div
-        className="absolute bottom-4 right-1/3 w-3 h-3 gradient-neon-2 rounded-full opacity-40"
+        className="absolute bottom-4 right-1/3 w-3 h-3 bg-cleveland-red rounded-full opacity-40"
         animate={{ 
           y: [10, -10, 10],
           opacity: [0.4, 0.8, 0.4]
         }}
         transition={{ duration: 4, repeat: Infinity, delay: 1 }}
+      />
+      <motion.div
+        className="absolute top-1/2 left-1/6 w-2 h-2 bg-cleveland-green rounded-full opacity-50"
+        animate={{ 
+          x: [-5, 5, -5],
+          opacity: [0.5, 0.9, 0.5]
+        }}
+        transition={{ duration: 5, repeat: Infinity, delay: 2 }}
       />
     </motion.header>
   );

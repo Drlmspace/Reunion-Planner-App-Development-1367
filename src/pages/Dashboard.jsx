@@ -40,10 +40,10 @@ const Dashboard = () => {
         duration: 5000,
         icon: '⚠️',
         style: {
-          background: 'rgba(255,255,255,0.1)',
+          background: 'rgba(26,26,46,0.2)',
           backdropFilter: 'blur(20px)',
-          color: 'white',
-          border: '1px solid rgba(255,255,255,0.2)',
+          color: '#ffd700',
+          border: '1px solid rgba(255,215,0,0.2)',
         }
       });
     }
@@ -106,9 +106,9 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-8 relative">
-      {/* Floating decorative elements */}
+      {/* Floating decorative elements with Cleveland colors */}
       <motion.div
-        className="absolute top-10 right-10 w-4 h-4 gradient-neon-1 rounded-full opacity-60"
+        className="absolute top-10 right-10 w-4 h-4 bg-cleveland-gold rounded-full opacity-60"
         animate={{ 
           y: [-20, 20, -20],
           opacity: [0.6, 1, 0.6],
@@ -117,13 +117,22 @@ const Dashboard = () => {
         transition={{ duration: 4, repeat: Infinity }}
       />
       <motion.div
-        className="absolute top-32 left-10 w-3 h-3 gradient-neon-2 rounded-full opacity-40"
+        className="absolute top-32 left-10 w-3 h-3 bg-cleveland-red rounded-full opacity-40"
         animate={{ 
           y: [20, -20, 20],
           opacity: [0.4, 0.8, 0.4],
           rotate: [0, 180, 360]
         }}
         transition={{ duration: 6, repeat: Infinity, delay: 2 }}
+      />
+      <motion.div
+        className="absolute bottom-20 right-1/3 w-2 h-2 bg-cleveland-green rounded-full opacity-50"
+        animate={{ 
+          x: [15, -15, 15],
+          opacity: [0.5, 0.9, 0.5],
+          scale: [1, 1.3, 1]
+        }}
+        transition={{ duration: 5, repeat: Infinity, delay: 1 }}
       />
 
       {/* Development Mode Notice */}
@@ -143,7 +152,7 @@ const Dashboard = () => {
             </motion.div>
             <div>
               <motion.h3 
-                className="text-lg font-semibold text-white font-fun"
+                className="text-lg font-semibold text-cleveland-gold font-fun"
                 initial={{ x: -20 }}
                 animate={{ x: 0 }}
                 transition={{ delay: 0.2 }}
@@ -157,7 +166,7 @@ const Dashboard = () => {
                 transition={{ delay: 0.3 }}
               >
                 Authentication is disabled. You're logged in as a developer with mock data. All features are accessible for testing! 
-                <span className="ml-2">🚀</span>
+                <span className="ml-2 text-cleveland-gold">🚀</span>
               </motion.p>
             </div>
           </div>
@@ -173,7 +182,7 @@ const Dashboard = () => {
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
             transition={{ type: "spring", stiffness: 100 }}
           >
-            <Card className="border-red-400/50 glow-border">
+            <Card className="border-cleveland-red glow-border">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <motion.div 
@@ -184,11 +193,11 @@ const Dashboard = () => {
                     <SafeIcon icon={FiAlertTriangle} className="text-white text-xl" />
                   </motion.div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white font-fun">
+                    <h3 className="text-lg font-semibold text-cleveland-red font-fun">
                       Budget Alert <span className="emoji-bounce">⚠️</span>
                     </h3>
                     <p className="text-white/70">
-                      Your budget of ${budgetData.planned.toLocaleString()} has been exceeded by ${Math.abs(budgetData.remaining).toLocaleString()} 
+                      Your budget of <span className="text-cleveland-gold">${budgetData.planned.toLocaleString()}</span> has been exceeded by <span className="text-cleveland-red">${Math.abs(budgetData.remaining).toLocaleString()}</span> 
                       <span className="ml-2">💸</span>
                     </p>
                   </div>
@@ -214,11 +223,12 @@ const Dashboard = () => {
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <h1 className="text-4xl font-bold text-white-glass mb-2 font-fun">
+          <h1 className="text-4xl font-bold text-gradient mb-2 font-fun">
             Dashboard <span className="text-3xl emoji-bounce">🎊</span>
           </h1>
           <p className="text-white/70 text-lg">
-            Welcome back! Here's what's happening with your reunion planning 
+            Welcome back! Here's what's happening with your 
+            <span className="text-cleveland-gold font-semibold"> reunion planning</span>
             <motion.span 
               className="ml-2 text-xl"
               animate={{ rotate: [0, 10, -10, 0] }}
@@ -261,7 +271,7 @@ const Dashboard = () => {
             }}
             className={celebration ? 'celebrate' : ''}
           >
-            <Card hover glow className="text-center group relative overflow-hidden">
+            <Card hover glow className="text-center group relative overflow-hidden shadow-cleveland">
               <motion.div 
                 className="flex items-center justify-center mb-4"
                 whileHover={{ scale: 1.1 }}
@@ -272,7 +282,7 @@ const Dashboard = () => {
               </motion.div>
               
               <motion.h3 
-                className="text-2xl font-bold text-white mb-1 font-space"
+                className="text-2xl font-bold text-cleveland-gold mb-1 font-space"
                 whileHover={{ scale: 1.05 }}
               >
                 {stat.value}
@@ -294,7 +304,7 @@ const Dashboard = () => {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.5, duration: 0.6 }}
       >
-        <Card className="overflow-hidden" glow>
+        <Card className="overflow-hidden shadow-cleveland" glow>
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-3">
               <motion.div 
@@ -305,14 +315,14 @@ const Dashboard = () => {
                 <SafeIcon icon={FiDollarSign} className="text-2xl text-white" />
               </motion.div>
               <div>
-                <h2 className="text-2xl font-bold text-white font-fun">
+                <h2 className="text-2xl font-bold text-cleveland-gold font-fun">
                   Budget Overview <span className="text-xl">💰</span>
                 </h2>
                 <p className="text-white/70">Track your spending and budget allocation</p>
               </div>
             </div>
             <Link to="/chapters/date-budget">
-              <Button variant="outline" size="small">
+              <Button variant="outline" size="small" className="border-cleveland-gold text-cleveland-gold hover:bg-cleveland-gold hover:text-black">
                 <span className="flex items-center space-x-2">
                   <span>Budget Details</span>
                   <SafeIcon icon={FiArrowRight} />
@@ -324,12 +334,13 @@ const Dashboard = () => {
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
-                { label: 'Planned Budget', value: budgetData.planned, emoji: '📊' },
-                { label: 'Actual Expenses', value: budgetData.actual, emoji: '💸' },
+                { label: 'Planned Budget', value: budgetData.planned, emoji: '📊', color: 'text-cleveland-gold' },
+                { label: 'Actual Expenses', value: budgetData.actual, emoji: '💸', color: 'text-cleveland-red' },
                 { 
                   label: budgetData.remaining >= 0 ? 'Remaining' : 'Over Budget', 
                   value: Math.abs(budgetData.remaining),
-                  emoji: budgetData.remaining >= 0 ? '💚' : '🔴'
+                  emoji: budgetData.remaining >= 0 ? '💚' : '🔴',
+                  color: budgetData.remaining >= 0 ? 'text-cleveland-green' : 'text-cleveland-red'
                 }
               ].map((item, index) => (
                 <motion.div
@@ -344,10 +355,7 @@ const Dashboard = () => {
                     <span>{item.label}</span>
                     <span className="text-lg">{item.emoji}</span>
                   </div>
-                  <div className={`text-3xl font-bold ${
-                    item.label.includes('Over') ? 'text-red-400' : 
-                    item.label.includes('Remaining') ? 'text-green-400' : 'text-white'
-                  } font-space`}>
+                  <div className={`text-3xl font-bold ${item.color} font-space`}>
                     ${item.value.toLocaleString()}
                   </div>
                 </motion.div>
@@ -355,7 +363,7 @@ const Dashboard = () => {
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
+              <h3 className="text-lg font-semibold text-cleveland-gold flex items-center space-x-2">
                 <span>Category Breakdown</span>
                 <span className="text-xl">📈</span>
               </h3>
@@ -370,7 +378,7 @@ const Dashboard = () => {
                   <div className="flex justify-between items-center">
                     <span className="font-medium text-white">{category.name}</span>
                     <span className={`font-semibold ${
-                      category.actual > category.planned ? 'text-red-400' : 'text-white'
+                      category.actual > category.planned ? 'text-cleveland-red' : 'text-cleveland-gold'
                     }`}>
                       ${category.actual.toLocaleString()} / ${category.planned.toLocaleString()}
                     </span>
@@ -399,7 +407,7 @@ const Dashboard = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.7, duration: 0.6 }}
         >
-          <Card glow>
+          <Card glow className="shadow-cleveland">
             <div className="flex items-center space-x-3 mb-6">
               <motion.div 
                 className="w-12 h-12 rounded-xl gradient-neon-1 flex items-center justify-center float"
@@ -409,7 +417,7 @@ const Dashboard = () => {
                 <SafeIcon icon={FiCalendar} className="text-2xl text-white" />
               </motion.div>
               <div>
-                <h2 className="text-xl font-bold text-white font-fun">
+                <h2 className="text-xl font-bold text-cleveland-gold font-fun">
                   Current Reunion <span className="text-lg">🎪</span>
                 </h2>
                 <p className="text-white/70">Your active planning project</p>
@@ -419,7 +427,7 @@ const Dashboard = () => {
             {currentReunion ? (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-2 flex items-center space-x-2">
+                  <h3 className="text-lg font-semibold text-cleveland-gold mb-2 flex items-center space-x-2">
                     <span>{currentReunion.title}</span>
                     <span className="text-xl">🎊</span>
                   </h3>
@@ -432,14 +440,14 @@ const Dashboard = () => {
                       <span>Type:</span>
                       <span>🏷️</span>
                     </span>
-                    <div className="font-semibold text-white capitalize mt-1">{currentReunion.type}</div>
+                    <div className="font-semibold text-cleveland-gold capitalize mt-1">{currentReunion.type}</div>
                   </div>
                   <div className="glass-card p-4 rounded-xl">
                     <span className="text-white/70 flex items-center space-x-1">
                       <span>Date:</span>
                       <span>📅</span>
                     </span>
-                    <div className="font-semibold text-white mt-1">
+                    <div className="font-semibold text-cleveland-gold mt-1">
                       {currentReunion.planned_date 
                         ? new Date(currentReunion.planned_date).toLocaleDateString() 
                         : 'Not set'
@@ -454,7 +462,7 @@ const Dashboard = () => {
                       <span>Progress</span>
                       <span>📊</span>
                     </span>
-                    <span className="text-white font-semibold">25%</span>
+                    <span className="text-cleveland-gold font-semibold">25%</span>
                   </div>
                   <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
                     <motion.div 
@@ -479,7 +487,7 @@ const Dashboard = () => {
                   <span>No reunion selected</span>
                   <span className="text-xl">😢</span>
                 </p>
-                <Button variant="outline" size="small">
+                <Button variant="outline" size="small" className="border-cleveland-gold text-cleveland-gold">
                   Create Your First Reunion 🚀
                 </Button>
               </div>
@@ -493,7 +501,7 @@ const Dashboard = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.8, duration: 0.6 }}
         >
-          <Card glow>
+          <Card glow className="shadow-cleveland">
             <div className="flex items-center space-x-3 mb-6">
               <motion.div 
                 className="w-12 h-12 rounded-xl gradient-neon-3 flex items-center justify-center float"
@@ -503,7 +511,7 @@ const Dashboard = () => {
                 <SafeIcon icon={FiClock} className="text-2xl text-white" />
               </motion.div>
               <div>
-                <h2 className="text-xl font-bold text-white font-fun">
+                <h2 className="text-xl font-bold text-cleveland-green font-fun">
                   Recent Activity <span className="text-lg">⚡</span>
                 </h2>
                 <p className="text-white/70">Latest planning updates</p>
@@ -547,7 +555,7 @@ const Dashboard = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1, duration: 0.6 }}
       >
-        <Card glow>
+        <Card glow className="shadow-cleveland">
           <div className="flex items-center space-x-3 mb-8">
             <motion.div 
               className="w-12 h-12 rounded-xl gradient-bg-5 flex items-center justify-center float"
@@ -557,7 +565,7 @@ const Dashboard = () => {
               <SafeIcon icon={FiTrendingUp} className="text-2xl text-white" />
             </motion.div>
             <div>
-              <h2 className="text-2xl font-bold text-white font-fun">
+              <h2 className="text-2xl font-bold text-gradient font-fun">
                 Chapter Progress <span className="text-xl">📚</span>
               </h2>
               <p className="text-white/70">Track your planning journey</p>
@@ -575,7 +583,7 @@ const Dashboard = () => {
                 whileHover={{ scale: 1.02, y: -2 }}
               >
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-white flex items-center space-x-2">
+                  <h3 className="font-semibold text-cleveland-gold flex items-center space-x-2">
                     <span>{chapter.name}</span>
                     <span className="text-lg">{chapter.emoji}</span>
                   </h3>
