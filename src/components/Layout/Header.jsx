@@ -7,7 +7,7 @@ import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../../common/SafeIcon';
 import { motion } from 'framer-motion';
 
-const { FiUser, FiLogOut, FiSettings, FiEdit3, FiSave, FiX } = FiIcons;
+const { FiUser, FiLogOut, FiSettings, FiEdit3, FiSave, FiX, FiShield } = FiIcons;
 
 const Header = () => {
   const { user, signOut } = useAuth();
@@ -37,6 +37,9 @@ const Header = () => {
     setIsEditingTitle(false);
     setIsEditingDate(false);
   };
+
+  // Check if user is admin
+  const isAdmin = user?.role === 'admin' || user?.user_metadata?.role === 'admin';
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
@@ -79,7 +82,7 @@ const Header = () => {
                 )}
               </div>
             )}
-            
+
             {currentReunion && (
               <div className="mt-1">
                 {isEditingDate ? (
@@ -105,10 +108,9 @@ const Header = () => {
                 ) : (
                   <div className="flex items-center space-x-2">
                     <p className="text-sm text-gray-600">
-                      {currentReunion.type} • {
-                        currentReunion.planned_date
-                          ? new Date(currentReunion.planned_date).toLocaleDateString()
-                          : 'Date TBD'
+                      {currentReunion.type} • {currentReunion.planned_date 
+                        ? new Date(currentReunion.planned_date).toLocaleDateString() 
+                        : 'Date TBD'
                       }
                     </p>
                     <Button
@@ -126,17 +128,36 @@ const Header = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <SafeIcon icon={FiUser} className="text-lg" />
-              <span>{user?.email}</span>
-              <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">
-                DEV MODE
-              </span>
-            </div>
+            {user && (
+              <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <SafeIcon 
+                  icon={isAdmin ? FiShield : FiUser} 
+                  className={`text-lg ${isAdmin ? 'text-blue-600' : ''}`} 
+                />
+                <span>
+                  {isAdmin ? 'Administrator' : user?.email}
+                  {isAdmin && (
+                    <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                      Admin
+                    </span>
+                  )}
+                </span>
+              </div>
+            )}
+
             <Button
               variant="ghost"
               size="small"
               onClick={signOut}
+              className="flex items-center space-x-2"
+            >
+              <SafeIcon icon={FiLogOut} className="text-lg" />
+              <span>Sign Out</span>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="small"
               className="flex items-center space-x-2"
             >
               <SafeIcon icon={FiSettings} className="text-lg" />

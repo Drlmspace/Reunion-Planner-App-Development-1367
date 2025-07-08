@@ -7,6 +7,8 @@ import Layout from './components/Layout/Layout';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
+import ForgotPassword from './pages/Auth/ForgotPassword';
+import ResetPassword from './pages/Auth/ResetPassword';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import ChapterRoutes from './routes/ChapterRoutes';
 import './App.css';
@@ -18,13 +20,15 @@ function App() {
         <Router>
           <div className="min-h-screen bg-gray-50">
             <Routes>
-              {/* Auth routes - kept for future use but not accessible in dev mode */}
+              {/* Public Auth routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               
-              {/* Main app routes - always accessible in dev mode */}
-              <Route 
-                path="/" 
+              {/* Protected app routes */}
+              <Route
+                path="/"
                 element={
                   <ProtectedRoute>
                     <Layout />
@@ -36,7 +40,7 @@ function App() {
               </Route>
             </Routes>
             
-            <Toaster 
+            <Toaster
               position="top-right"
               toastOptions={{
                 duration: 4000,
@@ -44,7 +48,7 @@ function App() {
                   background: '#363636',
                   color: '#fff',
                 },
-              }} 
+              }}
             />
           </div>
         </Router>

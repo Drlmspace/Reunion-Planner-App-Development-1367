@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { supabase, TABLES } from '../lib/supabase';
+import toast from 'react-hot-toast';
 
 const ReunionContext = createContext({});
 
@@ -53,76 +55,149 @@ export const ReunionProvider = ({ children }) => {
   const { user } = useAuth();
   const [state, dispatch] = useReducer(reunionReducer, initialState);
 
+  // For development and preview purposes
+  const isPreviewEnvironment = import.meta.env.MODE === 'development' || window.location.host.includes('preview');
+  
   useEffect(() => {
-    if (user) {
-      // Mock data for development
-      const mockReunions = [
+    // In preview mode, set sample data if no user
+    if (isPreviewEnvironment && !user) {
+      const sampleReunions = [
         {
-          id: 'reunion-1',
+          id: 'preview-reunion-1',
           title: 'Smith Family Reunion 2024',
-          description: 'Annual family gathering to reconnect and celebrate',
+          description: 'Annual gathering of the Smith family',
           type: 'family',
           planned_date: '2024-07-15',
-          created_by: user.id,
-          created_at: '2024-01-01'
-        },
-        {
-          id: 'reunion-2',
-          title: 'Class of 2010 Reunion',
-          description: 'High school reunion - 15 year celebration',
-          type: 'class',
-          planned_date: '2024-08-20',
-          created_by: user.id,
-          created_at: '2024-01-15'
+          created_by: 'preview-user-id',
+          created_at: new Date().toISOString()
         }
       ];
-
-      dispatch({ type: 'SET_REUNIONS', payload: mockReunions });
-      
-      // Set the first reunion as current if none is selected
-      if (!state.currentReunion && mockReunions.length > 0) {
-        dispatch({ type: 'SET_CURRENT_REUNION', payload: mockReunions[0] });
-      }
+      dispatch({ type: 'SET_REUNIONS', payload: sampleReunions });
+      dispatch({ type: 'SET_CURRENT_REUNION', payload: sampleReunions[0] });
+      return;
     }
-  }, [user, state.currentReunion]);
+    
+    if (user) {
+      fetchReunions();
+    } else {
+      dispatch({ type: 'SET_REUNIONS', payload: [] });
+      dispatch({ type: 'SET_CURRENT_REUNION', payload: null });
+    }
+  }, [user, isPreviewEnvironment]);
+
+  const fetchReunions = async () => {
+    if (!user && !isPreviewEnvironment) return;
+    
+    try {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      
+      // Use real API call only if we have a real user
+      if (user && !isPreviewEnvironment) {
+        const { data, error } = await supabase
+          .from(TABLES.REUNIONS)
+          .select('*')
+          .eq('created_by', user.id)
+          .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        
+        dispatch({ type: 'SET_REUNIONS', payload: data || [] });
+        
+        // Set the first reunion as current if none is selected
+        if (!state.currentReunion && data && data.length > 0) {
+          dispatch({ type: 'SET_CURRENT_REUNION', payload: data[0] });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching reunions:', error);
+      dispatch({ type: 'SET_ERROR', payload: error.message });
+      toast.error('Failed to load reunions');
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  };
 
   const createReunion = async (reunionData) => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       
-      // Mock creation for development
+      // Mock create for preview environment
+      if (isPreviewEnvironment) {
+        const newReunion = {
+          ...reunionData,
+          id: `preview-reunion-${Date.now()}`,
+          created_by: user?.id || 'preview-user-id',
+          created_at: new Date().toISOString()
+        };
+        
+        dispatch({ type: 'ADD_REUNION', payload: newReunion });
+        toast.success('Reunion created successfully!');
+        
+        return { data: newReunion, error: null };
+      }
+      
+      // Real API call
       const newReunion = {
-        id: `reunion-${Date.now()}`,
         ...reunionData,
         created_by: user.id,
         created_at: new Date().toISOString()
       };
-
-      dispatch({ type: 'ADD_REUNION', payload: newReunion });
-      console.log('Mock reunion created:', newReunion);
-      return { data: newReunion, error: null };
+      
+      const { data, error } = await supabase
+        .from(TABLES.REUNIONS)
+        .insert([newReunion])
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      dispatch({ type: 'ADD_REUNION', payload: data });
+      toast.success('Reunion created successfully!');
+      
+      return { data, error: null };
     } catch (error) {
+      console.error('Error creating reunion:', error);
       dispatch({ type: 'SET_ERROR', payload: error.message });
+      toast.error('Failed to create reunion');
       return { data: null, error };
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
   const updateReunion = async (id, updates) => {
     try {
-      const updatedReunion = {
-        ...state.reunions.find(r => r.id === id),
-        ...updates
-      };
+      // Mock update for preview environment
+      if (isPreviewEnvironment) {
+        const updatedReunion = {
+          ...(state.reunions.find(r => r.id === id) || {}),
+          ...updates,
+          id
+        };
+        
+        dispatch({ type: 'UPDATE_REUNION', payload: updatedReunion });
+        toast.success('Reunion updated successfully!');
+        
+        return { data: updatedReunion, error: null };
+      }
       
-      dispatch({ type: 'UPDATE_REUNION', payload: updatedReunion });
-      console.log('Mock reunion updated:', updatedReunion);
+      // Real API call
+      const { data, error } = await supabase
+        .from(TABLES.REUNIONS)
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
       
-      // Also update any references to this reunion elsewhere in the app
-      localStorage.setItem('currentReunion', JSON.stringify(updatedReunion));
+      if (error) throw error;
       
-      return { data: updatedReunion, error: null };
+      dispatch({ type: 'UPDATE_REUNION', payload: data });
+      toast.success('Reunion updated successfully!');
+      
+      return { data, error: null };
     } catch (error) {
       console.error('Failed to update reunion:', error);
+      toast.error('Failed to update reunion');
       return { data: null, error };
     }
   };
@@ -130,11 +205,6 @@ export const ReunionProvider = ({ children }) => {
   const setCurrentReunion = (reunion) => {
     dispatch({ type: 'SET_CURRENT_REUNION', payload: reunion });
     localStorage.setItem('currentReunion', JSON.stringify(reunion));
-  };
-
-  const fetchReunions = async () => {
-    console.log('Mock fetchReunions called');
-    // In development mode, reunions are already loaded
   };
 
   const value = {

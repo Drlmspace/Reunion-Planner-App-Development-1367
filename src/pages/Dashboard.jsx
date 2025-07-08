@@ -8,7 +8,7 @@ import SafeIcon from '../common/SafeIcon';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-const { FiPlus, FiCalendar, FiUsers, FiDollarSign, FiCheckCircle, FiClock, FiInfo, FiAlertTriangle, FiArrowRight, FiMessageSquare } = FiIcons;
+const { FiPlus, FiCalendar, FiUsers, FiDollarSign, FiCheckCircle, FiClock, FiMessageSquare, FiAlertTriangle, FiArrowRight } = FiIcons;
 
 const Dashboard = () => {
   const { currentReunion, reunions } = useReunion();
@@ -32,7 +32,10 @@ const Dashboard = () => {
   useEffect(() => {
     if (budgetData.actual > budgetData.planned) {
       setShowBudgetAlert(true);
-      toast.error('Budget exceeded! Please review your expenses.', { duration: 5000, icon: '⚠️' });
+      toast.error('Budget exceeded! Please review your expenses.', {
+        duration: 5000,
+        icon: '⚠️'
+      });
     }
   }, [budgetData.actual, budgetData.planned]);
 
@@ -40,11 +43,11 @@ const Dashboard = () => {
     { label: 'Total Reunions', value: reunions.length, icon: FiUsers, color: 'text-blue-600' },
     { label: 'Active Planning', value: 1, icon: FiClock, color: 'text-orange-600' },
     { label: 'Completed', value: 0, icon: FiCheckCircle, color: 'text-green-600' },
-    {
-      label: 'Budget Status',
-      value: budgetData.remaining >= 0 ? `$${budgetData.remaining} left` : `$${Math.abs(budgetData.remaining)} over`,
-      icon: FiDollarSign,
-      color: budgetData.remaining >= 0 ? 'text-green-600' : 'text-red-600'
+    { 
+      label: 'Budget Status', 
+      value: budgetData.remaining >= 0 ? `$${budgetData.remaining} left` : `$${Math.abs(budgetData.remaining)} over`, 
+      icon: FiDollarSign, 
+      color: budgetData.remaining >= 0 ? 'text-green-600' : 'text-red-600' 
     }
   ];
 
@@ -60,59 +63,11 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-8">
-      {/* Development Mode Notice */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-orange-50 border border-orange-200 rounded-lg p-4"
-      >
-        <div className="flex items-center space-x-3">
-          <SafeIcon icon={FiInfo} className="text-orange-600" />
-          <div>
-            <h3 className="text-sm font-medium text-orange-800">Development Mode</h3>
-            <p className="text-sm text-orange-700">
-              Authentication is disabled. You're logged in as a developer with mock data. All features are accessible for testing and development.
-            </p>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Feedback Link */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="bg-blue-50 border border-blue-200 rounded-lg p-4"
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <SafeIcon icon={FiMessageSquare} className="text-blue-600" />
-            <div>
-              <h3 className="text-sm font-medium text-blue-800">Help Us Improve!</h3>
-              <p className="text-sm text-blue-700">
-                We value your feedback. Share your thoughts and suggestions to make the Reunion Planner better.
-              </p>
-            </div>
-          </div>
-          <Button 
-            variant="outline" 
-            size="small" 
-            onClick={openFeedbackForm}
-            className="text-blue-600 border-blue-300 hover:bg-blue-50"
-          >
-            <span className="flex items-center space-x-1">
-              <span>Provide Feedback</span>
-              <SafeIcon icon={FiArrowRight} />
-            </span>
-          </Button>
-        </div>
-      </motion.div>
-
       {/* Budget Alert */}
       {showBudgetAlert && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }} 
+          animate={{ opacity: 1, y: 0 }} 
           className="bg-red-50 border border-red-200 rounded-lg p-4"
         >
           <div className="flex items-center justify-between">
@@ -126,11 +81,7 @@ const Dashboard = () => {
               </div>
             </div>
             <Link to="/chapters/date-budget">
-              <Button
-                variant="outline"
-                size="small"
-                className="text-red-600 border-red-300 hover:bg-red-50"
-              >
+              <Button variant="outline" size="small" className="text-red-600 border-red-300 hover:bg-red-50">
                 <span className="flex items-center space-x-1">
                   <span>Review Budget</span>
                   <SafeIcon icon={FiArrowRight} />
@@ -314,14 +265,17 @@ const Dashboard = () => {
                 <span className="text-xs text-gray-500">{chapter.progress}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className={`h-2 rounded-full ${chapter.color}`} style={{ width: `${chapter.progress}%` }}></div>
+                <div
+                  className={`h-2 rounded-full ${chapter.color}`}
+                  style={{ width: `${chapter.progress}%` }}
+                ></div>
               </div>
             </div>
           ))}
         </div>
       </Card>
 
-      {/* Feedback Card (Alternative placement at the bottom) */}
+      {/* Feedback Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -337,10 +291,7 @@ const Dashboard = () => {
               <p className="text-gray-700 mb-4">
                 Help us make the Reunion Planner better by sharing your thoughts, suggestions, or reporting any issues you've encountered.
               </p>
-              <Button 
-                onClick={openFeedbackForm}
-                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700"
-              >
+              <Button onClick={openFeedbackForm} className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700">
                 <span>Submit Feedback</span>
                 <SafeIcon icon={FiArrowRight} />
               </Button>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../contexts/AuthContext';
 import Button from '../../components/UI/Button';
@@ -7,12 +7,16 @@ import Input from '../../components/UI/Input';
 import Card from '../../components/UI/Card';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../../common/SafeIcon';
+import toast from 'react-hot-toast';
 
 const { FiUsers, FiMail, FiLock, FiUser } = FiIcons;
 
 const Register = () => {
-  const { user, signUp } = useAuth();
+  const { user, signUp, isSupabaseAvailable } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
   const { register, handleSubmit, formState: { errors }, watch } = useForm();
 
   if (user) {
@@ -21,10 +25,29 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     setLoading(true);
-    await signUp(data.email, data.password, {
-      first_name: data.firstName,
-      last_name: data.lastName
-    });
+    setError(null);
+
+    const { error } = await signUp(
+      data.email,
+      data.password,
+      {
+        first_name: data.firstName,
+        last_name: data.lastName
+      }
+    );
+
+    if (error) {
+      setError(error.message);
+      toast.error(error.message || 'Failed to create account');
+    } else {
+      if (isSupabaseAvailable) {
+        toast.success('Account created successfully! Please check your email to verify your account.');
+      } else {
+        toast.success('Demo account created successfully! You can now start planning your reunion.');
+      }
+      navigate('/');
+    }
+
     setLoading(false);
   };
 
@@ -40,15 +63,31 @@ const Register = () => {
             </div>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
-          <p className="text-gray-600">Join Reunion Planner and start organizing memorable events</p>
+          <p className="text-gray-600">
+            Join Reunion Planner and start organizing memorable events
+          </p>
+          
+          {!isSupabaseAvailable && (
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Demo Mode:</strong> You're using the app in demo mode. Your data will be stored locally for this session.
+              </p>
+            </div>
+          )}
         </div>
 
         <Card>
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-800">{error}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <Input
                 label="First Name"
-                {...register('firstName', { 
+                {...register('firstName', {
                   required: 'First name is required',
                   minLength: {
                     value: 2,
@@ -61,7 +100,7 @@ const Register = () => {
 
               <Input
                 label="Last Name"
-                {...register('lastName', { 
+                {...register('lastName', {
                   required: 'Last name is required',
                   minLength: {
                     value: 2,
@@ -76,7 +115,7 @@ const Register = () => {
             <Input
               label="Email"
               type="email"
-              {...register('email', { 
+              {...register('email', {
                 required: 'Email is required',
                 pattern: {
                   value: /\S+@\S+\.\S+/,
@@ -90,7 +129,7 @@ const Register = () => {
             <Input
               label="Password"
               type="password"
-              {...register('password', { 
+              {...register('password', {
                 required: 'Password is required',
                 minLength: {
                   value: 6,
@@ -105,10 +144,9 @@ const Register = () => {
             <Input
               label="Confirm Password"
               type="password"
-              {...register('confirmPassword', { 
+              {...register('confirmPassword', {
                 required: 'Please confirm your password',
-                validate: value => 
-                  value === password || 'Passwords do not match'
+                validate: value => value === password || 'Passwords do not match'
               })}
               error={errors.confirmPassword?.message}
               required

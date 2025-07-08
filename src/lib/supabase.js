@@ -1,15 +1,29 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+// Get environment variables (these should be set in your deployment environment)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder-project.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-key';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
-  }
-});
+// Check if we have valid Supabase credentials
+const hasValidCredentials = 
+  supabaseUrl !== 'https://placeholder-project.supabase.co' && 
+  supabaseAnonKey !== 'placeholder-key' &&
+  supabaseUrl.includes('.supabase.co') &&
+  supabaseAnonKey.length > 50;
+
+// Create Supabase client with fallback values for preview build
+export const supabase = hasValidCredentials 
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+      }
+    })
+  : null; // Set to null if no valid credentials
+
+// Export a flag to check if Supabase is available
+export const isSupabaseAvailable = hasValidCredentials;
 
 // Database table names
 export const TABLES = {

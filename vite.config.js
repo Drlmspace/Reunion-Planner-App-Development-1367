@@ -21,13 +21,21 @@ export default defineConfig({
           router: ['react-router-dom'],
           ui: ['framer-motion', 'react-icons'],
           forms: ['react-hook-form'],
-          utils: ['date-fns', 'uuid']
+          utils: ['date-fns', 'uuid'],
+          supabase: ['@supabase/supabase-js']
         }
       }
     }
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom', 'framer-motion', 'react-icons/fi']
+    include: [
+      'react', 
+      'react-dom', 
+      'react-router-dom', 
+      'framer-motion', 
+      'react-icons/fi',
+      '@supabase/supabase-js'
+    ]
   },
   server: {
     port: 3000,
