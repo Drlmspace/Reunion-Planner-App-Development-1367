@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useReunion } from '../../contexts/ReunionContext';
 import Button from '../UI/Button';
@@ -108,10 +109,10 @@ const Header = () => {
                 ) : (
                   <div className="flex items-center space-x-2">
                     <p className="text-sm text-gray-600">
-                      {currentReunion.type} • {currentReunion.planned_date 
-                        ? new Date(currentReunion.planned_date).toLocaleDateString() 
-                        : 'Date TBD'
-                      }
+                      {currentReunion.type} •{' '}
+                      {currentReunion.planned_date
+                        ? new Date(currentReunion.planned_date).toLocaleDateString()
+                        : 'Date TBD'}
                     </p>
                     <Button
                       variant="ghost"
@@ -130,9 +131,9 @@ const Header = () => {
           <div className="flex items-center space-x-4">
             {user && (
               <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <SafeIcon 
-                  icon={isAdmin ? FiShield : FiUser} 
-                  className={`text-lg ${isAdmin ? 'text-blue-600' : ''}`} 
+                <SafeIcon
+                  icon={isAdmin ? FiShield : FiUser}
+                  className={`text-lg ${isAdmin ? 'text-blue-600' : ''}`}
                 />
                 <span>
                   {isAdmin ? 'Administrator' : user?.email}
@@ -155,14 +156,16 @@ const Header = () => {
               <span>Sign Out</span>
             </Button>
 
-            <Button
-              variant="ghost"
-              size="small"
-              className="flex items-center space-x-2"
-            >
-              <SafeIcon icon={FiSettings} className="text-lg" />
-              <span>Settings</span>
-            </Button>
+            <Link to="/settings">
+              <Button
+                variant="ghost"
+                size="small"
+                className="flex items-center space-x-2"
+              >
+                <SafeIcon icon={FiSettings} className="text-lg" />
+                <span>Settings</span>
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

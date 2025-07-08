@@ -5,6 +5,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ReunionProvider } from './contexts/ReunionContext';
 import Layout from './components/Layout/Layout';
 import Dashboard from './pages/Dashboard';
+import Settings from './pages/Settings';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import ForgotPassword from './pages/Auth/ForgotPassword';
@@ -25,7 +26,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
-              
+
               {/* Protected app routes */}
               <Route
                 path="/"
@@ -36,10 +37,11 @@ function App() {
                 }
               >
                 <Route index element={<Dashboard />} />
+                <Route path="settings" element={<Settings />} />
                 <Route path="chapters/*" element={<ChapterRoutes />} />
               </Route>
             </Routes>
-            
+
             <Toaster
               position="top-right"
               toastOptions={{

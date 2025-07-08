@@ -61,20 +61,27 @@ const RSVPChapter = () => {
     if (filters.dietary !== 'all' && rsvp.dietary !== filters.dietary) return false;
     return true;
   });
-  
+
+  const clearFilters = () => {
+    setFilters({
+      status: 'all',
+      dietary: 'all'
+    });
+  };
+
   const exportRsvpsToPdf = () => {
     const doc = new jsPDF();
-    
+
     // Add title
     doc.setFontSize(18);
     doc.text(`${currentReunion?.title || 'Reunion'} - RSVP Report`, 14, 20);
-    
+
     // Add date and summary
     doc.setFontSize(10);
     doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
     doc.text(`Total Invited: ${stats.total} | Confirmed: ${stats.confirmed} | Declined: ${stats.declined} | Pending: ${stats.pending}`, 14, 40);
     doc.text(`Total Guests: ${stats.totalGuests} (including plus ones)`, 14, 50);
-    
+
     // Create RSVP table data
     const tableData = filteredRsvps.map(rsvp => [
       rsvp.name,
@@ -84,7 +91,7 @@ const RSVPChapter = () => {
       rsvp.dietary || 'None',
       rsvp.notes || '—'
     ]);
-    
+
     // Add RSVP table
     doc.autoTable({
       startY: 60,
@@ -102,7 +109,7 @@ const RSVPChapter = () => {
       },
       styles: { overflow: 'linebreak' }
     });
-    
+
     // Add dietary summary if needed
     if (doc.lastAutoTable.finalY < 250) {
       const dietaryGroups = rsvps.reduce((acc, rsvp) => {
@@ -111,15 +118,15 @@ const RSVPChapter = () => {
         if (rsvp.status === 'confirmed') acc[diet]++;
         return acc;
       }, {});
-      
+
       doc.setFontSize(14);
       doc.text('Dietary Restrictions Summary', 14, doc.lastAutoTable.finalY + 20);
-      
+
       const dietaryData = Object.entries(dietaryGroups).map(([diet, count]) => [
         diet,
         count.toString()
       ]);
-      
+
       doc.autoTable({
         startY: doc.lastAutoTable.finalY + 30,
         head: [['Restriction', 'Count']],
@@ -128,29 +135,29 @@ const RSVPChapter = () => {
         headStyles: { fillColor: [66, 135, 245] }
       });
     }
-    
+
     // Save the PDF
     doc.save(`${currentReunion?.title || 'reunion'}_rsvps.pdf`);
   };
-  
+
   const exportContactListToPdf = () => {
     const doc = new jsPDF();
-    
+
     // Add title
     doc.setFontSize(18);
     doc.text(`${currentReunion?.title || 'Reunion'} - Contact List`, 14, 20);
-    
+
     // Add date
     doc.setFontSize(10);
     doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
-    
+
     // Create contact table data
     const tableData = rsvps.map(rsvp => [
       rsvp.name,
       rsvp.email,
       rsvp.status.charAt(0).toUpperCase() + rsvp.status.slice(1)
     ]);
-    
+
     // Add contacts table
     doc.autoTable({
       startY: 40,
@@ -159,7 +166,7 @@ const RSVPChapter = () => {
       theme: 'striped',
       headStyles: { fillColor: [66, 135, 245] }
     });
-    
+
     // Save the PDF
     doc.save(`${currentReunion?.title || 'reunion'}_contacts.pdf`);
   };
@@ -209,11 +216,17 @@ const RSVPChapter = () => {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
           <div className="flex space-x-3">
-            <Button onClick={exportRsvpsToPdf} className="flex items-center space-x-2">
+            <Button
+              onClick={exportRsvpsToPdf}
+              className="flex items-center space-x-2"
+            >
               <SafeIcon icon={FiDownload} />
               <span>Export RSVPs</span>
             </Button>
-            <Button onClick={exportContactListToPdf} className="flex items-center space-x-2">
+            <Button
+              onClick={exportContactListToPdf}
+              className="flex items-center space-x-2"
+            >
               <SafeIcon icon={FiDownload} />
               <span>Export Contacts</span>
             </Button>
@@ -249,7 +262,7 @@ const RSVPChapter = () => {
           </div>
           <div className="flex items-end">
             <Button
-              onClick={() => setFilters({ status: 'all', dietary: 'all' })}
+              onClick={clearFilters}
               variant="outline"
               className="w-full"
             >
@@ -277,7 +290,6 @@ const RSVPChapter = () => {
                 <th className="text-left py-3 px-4 font-medium text-gray-900">Guests</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">Dietary</th>
                 <th className="text-left py-3 px-4 font-medium text-gray-900">Notes</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-900">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -296,7 +308,13 @@ const RSVPChapter = () => {
                       }`}
                     >
                       <SafeIcon
-                        icon={rsvp.status === 'confirmed' ? FiCheck : rsvp.status === 'declined' ? FiX : FiClock}
+                        icon={
+                          rsvp.status === 'confirmed'
+                            ? FiCheck
+                            : rsvp.status === 'declined'
+                            ? FiX
+                            : FiClock
+                        }
                         className="mr-1 text-xs"
                       />
                       {rsvp.status}
@@ -306,11 +324,6 @@ const RSVPChapter = () => {
                   <td className="py-3 px-4 text-sm text-gray-600">{rsvp.dietary || 'None'}</td>
                   <td className="py-3 px-4 text-sm text-gray-600 max-w-xs truncate">
                     {rsvp.notes || '—'}
-                  </td>
-                  <td className="py-3 px-4">
-                    <Button variant="outline" size="small">
-                      View Details
-                    </Button>
                   </td>
                 </tr>
               ))}
