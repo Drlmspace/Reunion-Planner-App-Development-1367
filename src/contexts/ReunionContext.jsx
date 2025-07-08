@@ -31,18 +31,18 @@ const reunionReducer = (state, action) => {
     case 'SET_CURRENT_REUNION':
       return { ...state, currentReunion: action.payload };
     case 'ADD_REUNION':
-      return {
-        ...state,
-        reunions: [...state.reunions, action.payload],
-        currentReunion: action.payload
-      };
+      return { ...state, reunions: [...state.reunions, action.payload], currentReunion: action.payload };
     case 'UPDATE_REUNION':
       return {
         ...state,
-        reunions: state.reunions.map(r =>
-          r.id === action.payload.id ? action.payload : r
-        ),
+        reunions: state.reunions.map(r => r.id === action.payload.id ? action.payload : r),
         currentReunion: state.currentReunion?.id === action.payload.id ? action.payload : state.currentReunion
+      };
+    case 'DELETE_REUNION':
+      return {
+        ...state,
+        reunions: state.reunions.filter(r => r.id !== action.payload),
+        currentReunion: state.currentReunion?.id === action.payload ? null : state.currentReunion
       };
     default:
       return state;
@@ -52,7 +52,7 @@ const reunionReducer = (state, action) => {
 export const ReunionProvider = ({ children }) => {
   const { user } = useAuth();
   const [state, dispatch] = useReducer(reunionReducer, initialState);
-
+  
   // For development and preview purposes
   const isPreviewEnvironment = import.meta.env.MODE === 'development' || window.location.host.includes('preview');
 
@@ -70,6 +70,7 @@ export const ReunionProvider = ({ children }) => {
           created_at: new Date().toISOString()
         }
       ];
+      
       dispatch({ type: 'SET_REUNIONS', payload: sampleReunions });
       dispatch({ type: 'SET_CURRENT_REUNION', payload: sampleReunions[0] });
       return;
@@ -85,10 +86,10 @@ export const ReunionProvider = ({ children }) => {
 
   const fetchReunions = async () => {
     if (!user && !isPreviewEnvironment) return;
-
+    
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-
+      
       // Use real API call only if we have a real user and Supabase is available
       if (user && isSupabaseAvailable && supabase) {
         const { data, error } = await supabase
@@ -96,11 +97,11 @@ export const ReunionProvider = ({ children }) => {
           .select('*')
           .eq('created_by', user.id)
           .order('created_at', { ascending: false });
-
+          
         if (error) throw error;
-
+        
         dispatch({ type: 'SET_REUNIONS', payload: data || [] });
-
+        
         // Set the first reunion as current if none is selected
         if (!state.currentReunion && data && data.length > 0) {
           dispatch({ type: 'SET_CURRENT_REUNION', payload: data[0] });
@@ -108,8 +109,10 @@ export const ReunionProvider = ({ children }) => {
       } else {
         // Load demo reunions from localStorage
         const demoReunions = JSON.parse(localStorage.getItem('demoReunions') || '[]');
+        
         if (demoReunions.length > 0) {
           dispatch({ type: 'SET_REUNIONS', payload: demoReunions });
+          
           if (!state.currentReunion) {
             dispatch({ type: 'SET_CURRENT_REUNION', payload: demoReunions[0] });
           }
@@ -126,7 +129,9 @@ export const ReunionProvider = ({ children }) => {
               created_at: new Date().toISOString()
             }
           ];
+          
           dispatch({ type: 'SET_REUNIONS', payload: mockReunions });
+          
           if (!state.currentReunion) {
             dispatch({ type: 'SET_CURRENT_REUNION', payload: mockReunions[0] });
           }
@@ -148,7 +153,9 @@ export const ReunionProvider = ({ children }) => {
           created_at: new Date().toISOString()
         }
       ];
+      
       dispatch({ type: 'SET_REUNIONS', payload: mockReunions });
+      
       if (!state.currentReunion) {
         dispatch({ type: 'SET_CURRENT_REUNION', payload: mockReunions[0] });
       }
@@ -158,9 +165,16 @@ export const ReunionProvider = ({ children }) => {
   };
 
   const createReunion = async (reunionData) => {
+    const MAX_REUNIONS = 2;
+    
+    if (state.reunions.length >= MAX_REUNIONS) {
+      toast.error(`You can only create up to ${MAX_REUNIONS} reunions. Please delete an existing reunion first.`);
+      return { data: null, error: new Error(`Maximum limit of ${MAX_REUNIONS} reunions reached`) };
+    }
+    
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-
+      
       // Check if Supabase is available and try to use it
       if (isSupabaseAvailable && supabase && user) {
         try {
@@ -170,15 +184,15 @@ export const ReunionProvider = ({ children }) => {
             created_by: user.id,
             created_at: new Date().toISOString()
           };
-
+          
           const { data, error } = await supabase
             .from(TABLES.REUNIONS)
             .insert([newReunion])
             .select()
             .single();
-
+            
           if (error) throw error;
-
+          
           dispatch({ type: 'ADD_REUNION', payload: data });
           toast.success('Reunion created successfully!');
           return { data, error: null };
@@ -187,7 +201,7 @@ export const ReunionProvider = ({ children }) => {
           // Fall through to demo mode
         }
       }
-
+      
       // Demo mode - create mock reunion
       const newReunion = {
         ...reunionData,
@@ -195,7 +209,7 @@ export const ReunionProvider = ({ children }) => {
         created_by: user?.id || 'demo-user',
         created_at: new Date().toISOString()
       };
-
+      
       dispatch({ type: 'ADD_REUNION', payload: newReunion });
       
       // Store in localStorage for persistence in demo mode
@@ -205,7 +219,6 @@ export const ReunionProvider = ({ children }) => {
       
       toast.success('Reunion created successfully!');
       return { data: newReunion, error: null };
-
     } catch (error) {
       console.error('Error creating reunion:', error);
       dispatch({ type: 'SET_ERROR', payload: error.message });
@@ -217,11 +230,10 @@ export const ReunionProvider = ({ children }) => {
         created_by: user?.id || 'demo-user',
         created_at: new Date().toISOString()
       };
-
+      
       dispatch({ type: 'ADD_REUNION', payload: fallbackReunion });
       toast.success('Reunion created successfully!');
       return { data: fallbackReunion, error: null };
-
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
@@ -239,9 +251,9 @@ export const ReunionProvider = ({ children }) => {
             .eq('id', id)
             .select()
             .single();
-
+            
           if (error) throw error;
-
+          
           dispatch({ type: 'UPDATE_REUNION', payload: data });
           toast.success('Reunion updated successfully!');
           return { data, error: null };
@@ -250,14 +262,9 @@ export const ReunionProvider = ({ children }) => {
           // Fall through to demo mode
         }
       }
-
-      // Demo mode - update local state
-      const updatedReunion = {
-        ...(state.reunions.find(r => r.id === id) || {}),
-        ...updates,
-        id
-      };
       
+      // Demo mode - update local state
+      const updatedReunion = { ...(state.reunions.find(r => r.id === id) || {}), ...updates, id };
       dispatch({ type: 'UPDATE_REUNION', payload: updatedReunion });
       
       // Update localStorage
@@ -267,20 +274,73 @@ export const ReunionProvider = ({ children }) => {
       
       toast.success('Reunion updated successfully!');
       return { data: updatedReunion, error: null };
-
     } catch (error) {
       console.error('Failed to update reunion:', error);
       
       // Fallback to demo mode
-      const updatedReunion = {
-        ...(state.reunions.find(r => r.id === id) || {}),
-        ...updates,
-        id
-      };
-      
+      const updatedReunion = { ...(state.reunions.find(r => r.id === id) || {}), ...updates, id };
       dispatch({ type: 'UPDATE_REUNION', payload: updatedReunion });
       toast.success('Reunion updated successfully!');
       return { data: updatedReunion, error: null };
+    }
+  };
+
+  const deleteReunion = async (id) => {
+    try {
+      // Check if Supabase is available and try to use it
+      if (isSupabaseAvailable && supabase) {
+        try {
+          // Real API call
+          const { error } = await supabase
+            .from(TABLES.REUNIONS)
+            .delete()
+            .eq('id', id);
+            
+          if (error) throw error;
+          
+          dispatch({ type: 'DELETE_REUNION', payload: id });
+          
+          // If we deleted the current reunion, select another one if available
+          if (state.currentReunion?.id === id) {
+            const remainingReunions = state.reunions.filter(r => r.id !== id);
+            if (remainingReunions.length > 0) {
+              dispatch({ type: 'SET_CURRENT_REUNION', payload: remainingReunions[0] });
+            } else {
+              dispatch({ type: 'SET_CURRENT_REUNION', payload: null });
+            }
+          }
+          
+          toast.success('Reunion deleted successfully!');
+          return { error: null };
+        } catch (error) {
+          console.error('Supabase error, falling back to local storage:', error);
+          // Fall through to demo mode
+        }
+      }
+      
+      // Demo mode - update local state
+      dispatch({ type: 'DELETE_REUNION', payload: id });
+      
+      // Update localStorage
+      const existingReunions = JSON.parse(localStorage.getItem('demoReunions') || '[]');
+      const updatedReunions = existingReunions.filter(r => r.id !== id);
+      localStorage.setItem('demoReunions', JSON.stringify(updatedReunions));
+      
+      // If we deleted the current reunion, select another one if available
+      if (state.currentReunion?.id === id) {
+        if (updatedReunions.length > 0) {
+          dispatch({ type: 'SET_CURRENT_REUNION', payload: updatedReunions[0] });
+        } else {
+          dispatch({ type: 'SET_CURRENT_REUNION', payload: null });
+        }
+      }
+      
+      toast.success('Reunion deleted successfully!');
+      return { error: null };
+    } catch (error) {
+      console.error('Failed to delete reunion:', error);
+      toast.error('Failed to delete reunion');
+      return { error };
     }
   };
 
@@ -306,6 +366,7 @@ export const ReunionProvider = ({ children }) => {
     ...state,
     createReunion,
     updateReunion,
+    deleteReunion,
     setCurrentReunion,
     fetchReunions,
     isSupabaseAvailable

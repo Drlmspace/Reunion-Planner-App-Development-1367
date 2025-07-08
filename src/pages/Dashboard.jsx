@@ -10,18 +10,23 @@ import SafeIcon from '../common/SafeIcon';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-const { FiPlus, FiCalendar, FiUsers, FiDollarSign, FiCheckCircle, FiClock, FiMessageSquare, FiAlertTriangle, FiArrowRight, FiX, FiSave } = FiIcons;
+const { FiPlus, FiCalendar, FiUsers, FiDollarSign, FiCheckCircle, FiClock, FiMessageSquare, FiAlertTriangle, FiArrowRight, FiX, FiSave, FiRefreshCw, FiTrash2 } = FiIcons;
 
 const Dashboard = () => {
-  const { currentReunion, reunions, createReunion, setCurrentReunion, loading } = useReunion();
+  const { currentReunion, reunions, createReunion, setCurrentReunion, loading, deleteReunion } = useReunion();
   const [showBudgetAlert, setShowBudgetAlert] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [reunionToDelete, setReunionToDelete] = useState(null);
   const [newReunion, setNewReunion] = useState({
     title: '',
     description: '',
     type: 'family',
     planned_date: ''
   });
+
+  const MAX_REUNIONS = 2;
+  const canCreateReunion = reunions.length < MAX_REUNIONS;
 
   // Sample budget data - in a real app, this would come from the budget context or API
   const budgetData = {
@@ -65,7 +70,12 @@ const Dashboard = () => {
       toast.error('Please select a reunion type');
       return;
     }
-    
+
+    if (reunions.length >= MAX_REUNIONS) {
+      toast.error(`You can only create up to ${MAX_REUNIONS} reunions. Please delete an existing reunion first.`);
+      return;
+    }
+
     try {
       const { data, error } = await createReunion(newReunion);
       
@@ -93,6 +103,46 @@ const Dashboard = () => {
       console.error('Error creating reunion:', error);
       toast.error('Failed to create reunion');
     }
+  };
+
+  const handleDeleteReunion = async (reunion) => {
+    setReunionToDelete(reunion);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteReunion = async () => {
+    if (!reunionToDelete) return;
+    
+    try {
+      const { error } = await deleteReunion(reunionToDelete.id);
+      
+      if (error) {
+        toast.error('Failed to delete reunion: ' + error.message);
+      } else {
+        toast.success('Reunion deleted successfully');
+        
+        // If we deleted the current reunion, select another one if available
+        if (currentReunion && currentReunion.id === reunionToDelete.id) {
+          const remainingReunions = reunions.filter(r => r.id !== reunionToDelete.id);
+          if (remainingReunions.length > 0) {
+            setCurrentReunion(remainingReunions[0]);
+          } else {
+            setCurrentReunion(null);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting reunion:', error);
+      toast.error('Failed to delete reunion');
+    } finally {
+      setShowDeleteConfirm(false);
+      setReunionToDelete(null);
+    }
+  };
+
+  const switchReunion = (reunion) => {
+    setCurrentReunion(reunion);
+    toast.success(`Switched to ${reunion.title}`);
   };
 
   const openFeedbackForm = () => {
@@ -145,12 +195,28 @@ const Dashboard = () => {
         <Button
           onClick={() => setShowCreateForm(true)}
           className="flex items-center space-x-2"
-          disabled={loading}
+          disabled={loading || !canCreateReunion}
+          title={!canCreateReunion ? `Maximum limit of ${MAX_REUNIONS} reunions reached` : undefined}
         >
           <SafeIcon icon={FiPlus} />
           <span>New Reunion</span>
         </Button>
       </div>
+
+      {/* Reunion Limit Alert */}
+      {!canCreateReunion && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="flex items-center space-x-3">
+            <SafeIcon icon={FiAlertTriangle} className="text-yellow-600" />
+            <div>
+              <h3 className="text-sm font-medium text-yellow-800">Reunion Limit Reached</h3>
+              <p className="text-sm text-yellow-700">
+                You can create up to {MAX_REUNIONS} reunions. Please delete an existing reunion to create a new one.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Create Reunion Modal */}
       {showCreateForm && (
@@ -239,6 +305,49 @@ const Dashboard = () => {
         </motion.div>
       )}
 
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && reunionToDelete && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
+          >
+            <div className="flex items-center space-x-3 text-red-600 mb-4">
+              <SafeIcon icon={FiAlertTriangle} className="text-xl" />
+              <h2 className="text-xl font-semibold">Delete Reunion</h2>
+            </div>
+            <p className="text-gray-700 mb-6">
+              Are you sure you want to delete <strong>{reunionToDelete.title}</strong>? This action cannot be undone.
+            </p>
+            <div className="flex space-x-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setReunionToDelete(null);
+                }}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="danger"
+                onClick={confirmDeleteReunion}
+                className="flex-1 flex items-center justify-center space-x-2"
+              >
+                <SafeIcon icon={FiTrash2} />
+                <span>Delete Reunion</span>
+              </Button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {quickStats.map((stat, index) => (
@@ -260,6 +369,73 @@ const Dashboard = () => {
           </motion.div>
         ))}
       </div>
+
+      {/* All Reunions List */}
+      <Card>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-gray-900">Your Reunions</h2>
+          <div className="text-sm text-gray-500">
+            {reunions.length} of {MAX_REUNIONS} reunions
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          {reunions.map(reunion => (
+            <div 
+              key={reunion.id} 
+              className={`p-4 border rounded-lg ${currentReunion?.id === reunion.id ? 'border-blue-400 bg-blue-50' : 'hover:bg-gray-50'}`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <h3 className="font-medium text-gray-900">{reunion.title}</h3>
+                  <div className="flex items-center text-sm text-gray-600 mt-1">
+                    <span className="capitalize">{reunion.type}</span>
+                    {reunion.planned_date && (
+                      <>
+                        <span className="mx-2">•</span>
+                        <span>{new Date(reunion.planned_date).toLocaleDateString()}</span>
+                      </>
+                    )}
+                  </div>
+                  {reunion.description && (
+                    <p className="text-sm text-gray-600 mt-2">{reunion.description}</p>
+                  )}
+                </div>
+                <div className="flex items-center space-x-2 ml-4">
+                  {currentReunion?.id !== reunion.id && (
+                    <Button 
+                      size="small" 
+                      onClick={() => switchReunion(reunion)}
+                      className="flex items-center space-x-1"
+                    >
+                      <SafeIcon icon={FiRefreshCw} />
+                      <span>Switch</span>
+                    </Button>
+                  )}
+                  <Button 
+                    variant="outline" 
+                    size="small"
+                    onClick={() => handleDeleteReunion(reunion)}
+                    className="text-red-600 hover:bg-red-50"
+                  >
+                    <SafeIcon icon={FiTrash2} />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {reunions.length === 0 && (
+            <div className="text-center py-6">
+              <SafeIcon icon={FiCalendar} className="text-4xl text-gray-300 mb-3 mx-auto" />
+              <p className="text-gray-500 mb-4">No reunions created yet</p>
+              <Button variant="outline" size="small" onClick={() => setShowCreateForm(true)}>
+                Create Your First Reunion
+              </Button>
+            </div>
+          )}
+        </div>
+      </Card>
 
       {/* Budget Overview */}
       <Card>
@@ -294,7 +470,6 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-
           <div className="space-y-3">
             <h3 className="font-medium text-gray-900">Category Breakdown</h3>
             {budgetData.categories.map((category, index) => (
@@ -317,6 +492,7 @@ const Dashboard = () => {
         </div>
       </Card>
 
+      {/* Current Reunion & Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Current Reunion */}
         <Card>
@@ -337,7 +513,9 @@ const Dashboard = () => {
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600">Date:</span>
                 <span className="font-medium">
-                  {currentReunion.planned_date ? new Date(currentReunion.planned_date).toLocaleDateString() : 'Not set'}
+                  {currentReunion.planned_date
+                    ? new Date(currentReunion.planned_date).toLocaleDateString()
+                    : 'Not set'}
                 </span>
               </div>
               <div className="pt-4 border-t">
@@ -346,7 +524,10 @@ const Dashboard = () => {
                   <span className="text-sm font-medium">25%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                  <div className="bg-primary-600 h-2 rounded-full" style={{ width: '25%' }}></div>
+                  <div
+                    className="bg-primary-600 h-2 rounded-full"
+                    style={{ width: '25%' }}
+                  ></div>
                 </div>
               </div>
             </div>
