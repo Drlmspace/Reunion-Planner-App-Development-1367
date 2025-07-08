@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }) => {
             setUser(null);
           }
         } else {
-          // Supabase not available, check for demo user
+          // If Supabase not available, check for demo user
           const demoUser = localStorage.getItem('demoUser');
           if (demoUser) {
             try {
@@ -118,7 +118,7 @@ export const AuthProvider = ({ children }) => {
   const signUp = async (email, password, userData) => {
     try {
       setLoading(true);
-      
+
       if (!isSupabaseAvailable || !supabase) {
         // Demo mode - create a mock user
         const mockUser = {
@@ -127,20 +127,16 @@ export const AuthProvider = ({ children }) => {
           user_metadata: userData,
           created_at: new Date().toISOString()
         };
-        
         localStorage.setItem('demoUser', JSON.stringify(mockUser));
         setUser(mockUser);
-        
-        toast.success('Demo account created successfully! You can now explore the app.');
+        toast.success('Account created successfully!');
         return { data: { user: mockUser }, error: null };
       }
 
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: userData
-        }
+        options: { data: userData }
       });
 
       if (error) throw error;
@@ -151,7 +147,6 @@ export const AuthProvider = ({ children }) => {
       
       // If it's a network error, offer demo mode
       if (error.message?.includes('NetworkError') || error.message?.includes('fetch')) {
-        toast.error('Unable to connect to server. Would you like to try demo mode?');
         // Auto-create demo user as fallback
         const mockUser = {
           id: `demo-${Date.now()}`,
@@ -159,13 +154,12 @@ export const AuthProvider = ({ children }) => {
           user_metadata: userData,
           created_at: new Date().toISOString()
         };
-        
         localStorage.setItem('demoUser', JSON.stringify(mockUser));
         setUser(mockUser);
-        
+        toast.success('Account created in offline mode!');
         return { data: { user: mockUser }, error: null };
       }
-      
+
       return { data: null, error };
     } finally {
       setLoading(false);
@@ -184,22 +178,24 @@ export const AuthProvider = ({ children }) => {
           const user = JSON.parse(demoUser);
           if (user.email === email) {
             setUser(user);
-            toast.success('Signed in to demo mode!');
+            toast.success('Signed in successfully!');
             return { data: { user }, error: null };
           }
         }
-        
+
         // Create new demo user
         const mockUser = {
           id: `demo-${Date.now()}`,
           email,
-          user_metadata: { first_name: 'Demo', last_name: 'User' },
+          user_metadata: {
+            first_name: 'Demo',
+            last_name: 'User'
+          },
           created_at: new Date().toISOString()
         };
-        
         localStorage.setItem('demoUser', JSON.stringify(mockUser));
         setUser(mockUser);
-        toast.success('Signed in to demo mode!');
+        toast.success('Signed in successfully!');
         return { data: { user: mockUser }, error: null };
       }
 
@@ -220,16 +216,18 @@ export const AuthProvider = ({ children }) => {
         const mockUser = {
           id: `demo-${Date.now()}`,
           email,
-          user_metadata: { first_name: 'Demo', last_name: 'User' },
+          user_metadata: {
+            first_name: 'Demo',
+            last_name: 'User'
+          },
           created_at: new Date().toISOString()
         };
-        
         localStorage.setItem('demoUser', JSON.stringify(mockUser));
         setUser(mockUser);
-        toast.success('Connected in demo mode due to network issues!');
+        toast.success('Connected in offline mode!');
         return { data: { user: mockUser }, error: null };
       }
-      
+
       return { data: null, error };
     } finally {
       setLoading(false);
@@ -266,12 +264,12 @@ export const AuthProvider = ({ children }) => {
   const resetPassword = async (email) => {
     try {
       setLoading(true);
-      
+
       if (!isSupabaseAvailable || !supabase) {
-        toast.info('Password reset is not available in demo mode. Please use admin login instead.');
-        return { error: new Error('Demo mode - password reset not available') };
+        toast.info('Password reset is not available in offline mode. Please use admin login instead.');
+        return { error: new Error('Offline mode - password reset not available') };
       }
-      
+
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: window.location.origin + '/reset-password'
       });

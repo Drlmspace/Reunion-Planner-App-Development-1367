@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useReunion } from '../contexts/ReunionContext';
+import { isSupabaseAvailable } from '../lib/supabase';
 import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
+import Input from '../components/UI/Input';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-const { FiPlus, FiCalendar, FiUsers, FiDollarSign, FiCheckCircle, FiClock, FiMessageSquare, FiAlertTriangle, FiArrowRight } = FiIcons;
+const { FiPlus, FiCalendar, FiUsers, FiDollarSign, FiCheckCircle, FiClock, FiMessageSquare, FiAlertTriangle, FiArrowRight, FiX, FiSave } = FiIcons;
 
 const Dashboard = () => {
-  const { currentReunion, reunions } = useReunion();
+  const { currentReunion, reunions, createReunion, setCurrentReunion, loading } = useReunion();
   const [showBudgetAlert, setShowBudgetAlert] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newReunion, setNewReunion] = useState({
+    title: '',
+    description: '',
+    type: 'family',
+    planned_date: ''
+  });
 
   // Sample budget data - in a real app, this would come from the budget context or API
   const budgetData = {
@@ -28,26 +37,30 @@ const Dashboard = () => {
     ]
   };
 
-  // Check if budget is exceeded and show alert
-  useEffect(() => {
-    if (budgetData.actual > budgetData.planned) {
-      setShowBudgetAlert(true);
-      toast.error('Budget exceeded! Please review your expenses.', {
-        duration: 5000,
-        icon: '⚠️'
-      });
-    }
-  }, [budgetData.actual, budgetData.planned]);
-
   const quickStats = [
-    { label: 'Total Reunions', value: reunions.length, icon: FiUsers, color: 'text-blue-600' },
-    { label: 'Active Planning', value: 1, icon: FiClock, color: 'text-orange-600' },
-    { label: 'Completed', value: 0, icon: FiCheckCircle, color: 'text-green-600' },
-    { 
-      label: 'Budget Status', 
-      value: budgetData.remaining >= 0 ? `$${budgetData.remaining} left` : `$${Math.abs(budgetData.remaining)} over`, 
-      icon: FiDollarSign, 
-      color: budgetData.remaining >= 0 ? 'text-green-600' : 'text-red-600' 
+    {
+      label: 'Total Reunions',
+      value: reunions.length,
+      icon: FiUsers,
+      color: 'text-blue-600'
+    },
+    {
+      label: 'Active Planning',
+      value: currentReunion ? 1 : 0,
+      icon: FiClock,
+      color: 'text-orange-600'
+    },
+    {
+      label: 'Completed',
+      value: 0,
+      icon: FiCheckCircle,
+      color: 'text-green-600'
+    },
+    {
+      label: 'Budget Status',
+      value: budgetData.remaining >= 0 ? `$${budgetData.remaining} left` : `$${Math.abs(budgetData.remaining)} over`,
+      icon: FiDollarSign,
+      color: budgetData.remaining >= 0 ? 'text-green-600' : 'text-red-600'
     }
   ];
 
@@ -57,6 +70,46 @@ const Dashboard = () => {
     { action: 'Added committee member', time: '3 days ago', type: 'add' }
   ];
 
+  const handleCreateReunion = async () => {
+    if (!newReunion.title.trim()) {
+      toast.error('Please enter a reunion title');
+      return;
+    }
+
+    if (!newReunion.type) {
+      toast.error('Please select a reunion type');
+      return;
+    }
+
+    try {
+      const { data, error } = await createReunion(newReunion);
+      
+      if (error) {
+        toast.error('Failed to create reunion: ' + error.message);
+        return;
+      }
+
+      // Set the newly created reunion as current
+      if (data) {
+        setCurrentReunion(data);
+      }
+
+      // Reset form and close modal
+      setNewReunion({
+        title: '',
+        description: '',
+        type: 'family',
+        planned_date: ''
+      });
+      setShowCreateForm(false);
+      
+      // Success message is handled in the context
+    } catch (error) {
+      console.error('Error creating reunion:', error);
+      toast.error('Failed to create reunion');
+    }
+  };
+
   const openFeedbackForm = () => {
     window.open('https://formdesigner.pro/form/view/230279', '_blank');
   };
@@ -65,9 +118,9 @@ const Dashboard = () => {
     <div className="space-y-8">
       {/* Budget Alert */}
       {showBudgetAlert && (
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }} 
-          animate={{ opacity: 1, y: 0 }} 
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
           className="bg-red-50 border border-red-200 rounded-lg p-4"
         >
           <div className="flex items-center justify-between">
@@ -100,11 +153,107 @@ const Dashboard = () => {
             Welcome back! Here's what's happening with your reunion planning.
           </p>
         </div>
-        <Button className="flex items-center space-x-2">
+        <Button 
+          onClick={() => setShowCreateForm(true)}
+          className="flex items-center space-x-2"
+          disabled={loading}
+        >
           <SafeIcon icon={FiPlus} />
           <span>New Reunion</span>
         </Button>
       </div>
+
+      {/* Create Reunion Modal */}
+      {showCreateForm && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-gray-900">Create New Reunion</h2>
+              <Button
+                variant="ghost"
+                size="small"
+                onClick={() => setShowCreateForm(false)}
+                disabled={loading}
+              >
+                <SafeIcon icon={FiX} />
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              <Input
+                label="Reunion Title"
+                value={newReunion.title}
+                onChange={(e) => setNewReunion({ ...newReunion, title: e.target.value })}
+                placeholder="e.g., Smith Family Reunion 2024"
+                required
+                disabled={loading}
+              />
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Reunion Type
+                </label>
+                <select
+                  value={newReunion.type}
+                  onChange={(e) => setNewReunion({ ...newReunion, type: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  disabled={loading}
+                >
+                  <option value="family">Family Reunion</option>
+                  <option value="class">Class Reunion</option>
+                  <option value="military">Military Reunion</option>
+                  <option value="corporate">Corporate Reunion</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <Input
+                label="Planned Date (Optional)"
+                type="date"
+                value={newReunion.planned_date}
+                onChange={(e) => setNewReunion({ ...newReunion, planned_date: e.target.value })}
+                disabled={loading}
+              />
+
+              <Input
+                label="Description (Optional)"
+                value={newReunion.description}
+                onChange={(e) => setNewReunion({ ...newReunion, description: e.target.value })}
+                placeholder="Brief description of your reunion"
+                disabled={loading}
+              />
+            </div>
+
+            <div className="flex space-x-3 mt-6">
+              <Button
+                variant="outline"
+                onClick={() => setShowCreateForm(false)}
+                className="flex-1"
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCreateReunion}
+                className="flex-1 flex items-center justify-center space-x-2"
+                loading={loading}
+                disabled={loading}
+              >
+                <SafeIcon icon={FiSave} />
+                <span>Create Reunion</span>
+              </Button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -203,7 +352,10 @@ const Dashboard = () => {
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600">Date:</span>
                 <span className="font-medium">
-                  {currentReunion.planned_date ? new Date(currentReunion.planned_date).toLocaleDateString() : 'Not set'}
+                  {currentReunion.planned_date 
+                    ? new Date(currentReunion.planned_date).toLocaleDateString() 
+                    : 'Not set'
+                  }
                 </span>
               </div>
               <div className="pt-4 border-t">
@@ -220,7 +372,11 @@ const Dashboard = () => {
             <div className="text-center py-8">
               <SafeIcon icon={FiCalendar} className="text-4xl text-gray-300 mb-4" />
               <p className="text-gray-500 mb-4">No reunion selected</p>
-              <Button variant="outline" size="small">
+              <Button 
+                variant="outline" 
+                size="small"
+                onClick={() => setShowCreateForm(true)}
+              >
                 Create Your First Reunion
               </Button>
             </div>
@@ -291,7 +447,10 @@ const Dashboard = () => {
               <p className="text-gray-700 mb-4">
                 Help us make the Reunion Planner better by sharing your thoughts, suggestions, or reporting any issues you've encountered.
               </p>
-              <Button onClick={openFeedbackForm} className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700">
+              <Button 
+                onClick={openFeedbackForm} 
+                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700"
+              >
                 <span>Submit Feedback</span>
                 <SafeIcon icon={FiArrowRight} />
               </Button>

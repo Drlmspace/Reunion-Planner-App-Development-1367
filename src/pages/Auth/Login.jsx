@@ -17,7 +17,7 @@ const Login = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Admin login form state
   const [adminUsername, setAdminUsername] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
@@ -77,10 +77,8 @@ const Login = () => {
     // Store admin session in localStorage for this session
     try {
       localStorage.setItem('adminSession', JSON.stringify(mockAdminUser));
-      
       toast.success('Administrator logged in successfully!');
       navigate(from, { replace: true });
-      
       // Force page reload to trigger auth context update
       window.location.reload();
     } catch (error) {
@@ -102,14 +100,6 @@ const Login = () => {
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
           <p className="text-gray-600">Sign in to your Reunion Planner account</p>
-          
-          {!isSupabaseAvailable && (
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-800">
-                <strong>Demo Mode:</strong> Backend services are not connected. Use admin login or create a demo account.
-              </p>
-            </div>
-          )}
         </div>
 
         <Card>
@@ -190,6 +180,7 @@ const Login = () => {
                 </div>
               </div>
               <h2 className="text-xl font-bold text-center mb-6">Administrator Login</h2>
+              
               <form onSubmit={handleAdminLogin} className="space-y-6">
                 <Input
                   label="Username"
@@ -198,7 +189,7 @@ const Login = () => {
                   placeholder="Enter administrator username"
                   required
                 />
-                
+
                 <Input
                   label="Password"
                   type="password"
@@ -207,7 +198,7 @@ const Login = () => {
                   placeholder="Enter administrator password"
                   required
                 />
-                
+
                 <Button
                   type="submit"
                   fullWidth
@@ -216,7 +207,7 @@ const Login = () => {
                 >
                   Login as Administrator
                 </Button>
-                
+
                 <Button
                   type="button"
                   variant="outline"

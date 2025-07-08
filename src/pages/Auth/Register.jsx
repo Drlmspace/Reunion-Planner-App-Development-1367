@@ -43,7 +43,7 @@ const Register = () => {
       if (isSupabaseAvailable) {
         toast.success('Account created successfully! Please check your email to verify your account.');
       } else {
-        toast.success('Demo account created successfully! You can now start planning your reunion.');
+        toast.success('Account created successfully! You can now start planning your reunion.');
       }
       navigate('/');
     }
@@ -66,14 +66,6 @@ const Register = () => {
           <p className="text-gray-600">
             Join Reunion Planner and start organizing memorable events
           </p>
-          
-          {!isSupabaseAvailable && (
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-800">
-                <strong>Demo Mode:</strong> You're using the app in demo mode. Your data will be stored locally for this session.
-              </p>
-            </div>
-          )}
         </div>
 
         <Card>
