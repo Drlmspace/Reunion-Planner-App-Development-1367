@@ -29,8 +29,8 @@ const reunionReducer = (state, action) => {
     case 'SET_CURRENT_REUNION':
       return { ...state, currentReunion: action.payload };
     case 'ADD_REUNION':
-      return { 
-        ...state, 
+      return {
+        ...state,
         reunions: [...state.reunions, action.payload],
         currentReunion: action.payload
       };
@@ -100,7 +100,6 @@ export const ReunionProvider = ({ children }) => {
 
       dispatch({ type: 'ADD_REUNION', payload: newReunion });
       console.log('Mock reunion created:', newReunion);
-      
       return { data: newReunion, error: null };
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
@@ -114,9 +113,12 @@ export const ReunionProvider = ({ children }) => {
         ...state.reunions.find(r => r.id === id),
         ...updates
       };
-
+      
       dispatch({ type: 'UPDATE_REUNION', payload: updatedReunion });
       console.log('Mock reunion updated:', updatedReunion);
+      
+      // Also update any references to this reunion elsewhere in the app
+      localStorage.setItem('currentReunion', JSON.stringify(updatedReunion));
       
       return { data: updatedReunion, error: null };
     } catch (error) {
@@ -127,6 +129,7 @@ export const ReunionProvider = ({ children }) => {
 
   const setCurrentReunion = (reunion) => {
     dispatch({ type: 'SET_CURRENT_REUNION', payload: reunion });
+    localStorage.setItem('currentReunion', JSON.stringify(reunion));
   };
 
   const fetchReunions = async () => {

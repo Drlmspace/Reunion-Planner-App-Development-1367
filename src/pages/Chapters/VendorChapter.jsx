@@ -6,7 +6,7 @@ import Input from '../../components/UI/Input';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../../common/SafeIcon';
 
-const { FiTruck, FiPlus, FiCheck, FiClock, FiDollarSign, FiPhone, FiTrendingUp, FiEdit } = FiIcons;
+const { FiTruck, FiPlus, FiCheck, FiClock, FiDollarSign, FiPhone, FiTrendingUp, FiEdit, FiDownload } = FiIcons;
 
 const VendorChapter = () => {
   const [vendors, setVendors] = useState([
@@ -146,6 +146,96 @@ const VendorChapter = () => {
     'Other': 'Miscellaneous'
   };
 
+  const exportVendorDirectoryToPdf = async () => {
+    try {
+      // Dynamic import to avoid build issues
+      const { jsPDF } = await import('jspdf');
+      await import('jspdf-autotable');
+      
+      const doc = new jsPDF();
+      
+      // Add title
+      doc.setFontSize(18);
+      doc.text('Vendor Directory', 14, 20);
+      
+      // Add date
+      doc.setFontSize(10);
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+      doc.text(`Total vendors: ${vendors.length} | Total cost: $${totalCost.toLocaleString()}`, 14, 40);
+      
+      // Create vendor table data
+      const tableData = vendors.map(vendor => [
+        vendor.name,
+        vendor.category,
+        vendor.contact,
+        vendor.phone,
+        vendor.email,
+        vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1),
+        `$${vendor.cost.toLocaleString()}`
+      ]);
+      
+      // Add vendor table
+      doc.autoTable({
+        startY: 50,
+        head: [['Vendor', 'Category', 'Contact', 'Phone', 'Email', 'Status', 'Cost']],
+        body: tableData,
+        theme: 'striped',
+        headStyles: { fillColor: [66, 135, 245] },
+        columnStyles: {
+          0: { cellWidth: 'auto' },
+          1: { cellWidth: 25 },
+          2: { cellWidth: 'auto' },
+          3: { cellWidth: 25 },
+          4: { cellWidth: 'auto' },
+          5: { cellWidth: 20 },
+          6: { cellWidth: 20 }
+        },
+        styles: { overflow: 'linebreak', fontSize: 8 }
+      });
+      
+      // Add vendor details if they fit
+      let yPos = doc.lastAutoTable.finalY + 20;
+      
+      if (yPos < 220) {
+        doc.setFontSize(14);
+        doc.text('Vendor Details', 14, yPos);
+        yPos += 10;
+        
+        vendors.forEach(vendor => {
+          if (yPos > 260) {
+            doc.addPage();
+            yPos = 20;
+          }
+          
+          doc.setFontSize(12);
+          doc.text(`${vendor.name} (${vendor.category})`, 14, yPos);
+          yPos += 6;
+          
+          doc.setFontSize(10);
+          doc.text(`Contact: ${vendor.contact} | Phone: ${vendor.phone}`, 14, yPos);
+          yPos += 5;
+          doc.text(`Email: ${vendor.email} | Status: ${vendor.status}`, 14, yPos);
+          yPos += 5;
+          doc.text(`Cost: $${vendor.cost.toLocaleString()}`, 14, yPos);
+          yPos += 5;
+          
+          if (vendor.notes) {
+            doc.text(`Notes: ${vendor.notes}`, 14, yPos);
+            yPos += 5;
+          }
+          
+          yPos += 5; // Add spacing between vendors
+        });
+      }
+      
+      // Save the PDF
+      doc.save('vendor_directory.pdf');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Unable to generate PDF. Please try again.');
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -197,8 +287,8 @@ const VendorChapter = () => {
                 </p>
               </div>
             </div>
-            <Button 
-              onClick={() => setShowBudgetSyncModal(true)} 
+            <Button
+              onClick={() => setShowBudgetSyncModal(true)}
               className="flex items-center space-x-2"
             >
               <SafeIcon icon={FiTrendingUp} />
@@ -222,7 +312,7 @@ const VendorChapter = () => {
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Sync Vendor Costs to Budget</h3>
             <p className="text-gray-600 mb-6">
-              This will add your vendor costs to the main budget according to their categories.
+              This will add your vendor costs to the main budget according to their categories. 
               Total cost to sync: <strong>${unsyncedCost.toLocaleString()}</strong>
             </p>
             <div className="space-y-2 mb-6">
@@ -274,9 +364,9 @@ const VendorChapter = () => {
           <Card>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-gray-900">Add New Vendor</h2>
-              <Button 
-                variant="ghost" 
-                size="small" 
+              <Button
+                variant="ghost"
+                size="small"
                 onClick={() => setShowAddForm(false)}
               >
                 Cancel
@@ -336,16 +426,10 @@ const VendorChapter = () => {
               />
             </div>
             <div className="mt-6 flex justify-end space-x-3">
-              <Button 
-                variant="outline" 
-                onClick={() => setShowAddForm(false)}
-              >
+              <Button variant="outline" onClick={() => setShowAddForm(false)}>
                 Cancel
               </Button>
-              <Button 
-                onClick={addVendor}
-                className="flex items-center space-x-2"
-              >
+              <Button onClick={addVendor} className="flex items-center space-x-2">
                 <SafeIcon icon={FiPlus} />
                 <span>Add Vendor</span>
               </Button>
@@ -358,13 +442,16 @@ const VendorChapter = () => {
       <Card>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-gray-900">Vendor Directory</h2>
-          <Button 
-            onClick={() => setShowAddForm(true)}
-            className="flex items-center space-x-2"
-          >
-            <SafeIcon icon={FiPlus} />
-            <span>Add Vendor</span>
-          </Button>
+          <div className="flex space-x-3">
+            <Button onClick={exportVendorDirectoryToPdf} className="flex items-center space-x-2">
+              <SafeIcon icon={FiDownload} />
+              <span>Export PDF</span>
+            </Button>
+            <Button onClick={() => setShowAddForm(true)} className="flex items-center space-x-2">
+              <SafeIcon icon={FiPlus} />
+              <span>Add Vendor</span>
+            </Button>
+          </div>
         </div>
         <div className="space-y-4">
           {vendors.map(vendor => (
@@ -378,7 +465,9 @@ const VendorChapter = () => {
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
                     <h3 className="text-lg font-semibold text-gray-900">{vendor.name}</h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[vendor.status]}`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[vendor.status]}`}
+                    >
                       {vendor.status}
                     </span>
                     {vendor.budgetSynced && (

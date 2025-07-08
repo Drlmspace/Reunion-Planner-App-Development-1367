@@ -8,7 +8,7 @@ import SafeIcon from '../common/SafeIcon';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-const { FiPlus, FiCalendar, FiUsers, FiDollarSign, FiCheckCircle, FiClock, FiInfo, FiAlertTriangle, FiArrowRight } = FiIcons;
+const { FiPlus, FiCalendar, FiUsers, FiDollarSign, FiCheckCircle, FiClock, FiInfo, FiAlertTriangle, FiArrowRight, FiMessageSquare } = FiIcons;
 
 const Dashboard = () => {
   const { currentReunion, reunions } = useReunion();
@@ -32,10 +32,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (budgetData.actual > budgetData.planned) {
       setShowBudgetAlert(true);
-      toast.error('Budget exceeded! Please review your expenses.', {
-        duration: 5000,
-        icon: '⚠️'
-      });
+      toast.error('Budget exceeded! Please review your expenses.', { duration: 5000, icon: '⚠️' });
     }
   }, [budgetData.actual, budgetData.planned]);
 
@@ -43,10 +40,10 @@ const Dashboard = () => {
     { label: 'Total Reunions', value: reunions.length, icon: FiUsers, color: 'text-blue-600' },
     { label: 'Active Planning', value: 1, icon: FiClock, color: 'text-orange-600' },
     { label: 'Completed', value: 0, icon: FiCheckCircle, color: 'text-green-600' },
-    { 
-      label: 'Budget Status', 
-      value: budgetData.remaining >= 0 ? `$${budgetData.remaining} left` : `$${Math.abs(budgetData.remaining)} over`, 
-      icon: FiDollarSign, 
+    {
+      label: 'Budget Status',
+      value: budgetData.remaining >= 0 ? `$${budgetData.remaining} left` : `$${Math.abs(budgetData.remaining)} over`,
+      icon: FiDollarSign,
       color: budgetData.remaining >= 0 ? 'text-green-600' : 'text-red-600'
     }
   ];
@@ -57,11 +54,15 @@ const Dashboard = () => {
     { action: 'Added committee member', time: '3 days ago', type: 'add' }
   ];
 
+  const openFeedbackForm = () => {
+    window.open('https://formdesigner.pro/form/view/230279', '_blank');
+  };
+
   return (
     <div className="space-y-8">
       {/* Development Mode Notice */}
-      <motion.div 
-        initial={{ opacity: 0, y: -10 }} 
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-orange-50 border border-orange-200 rounded-lg p-4"
       >
@@ -76,10 +77,41 @@ const Dashboard = () => {
         </div>
       </motion.div>
 
+      {/* Feedback Link */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="bg-blue-50 border border-blue-200 rounded-lg p-4"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <SafeIcon icon={FiMessageSquare} className="text-blue-600" />
+            <div>
+              <h3 className="text-sm font-medium text-blue-800">Help Us Improve!</h3>
+              <p className="text-sm text-blue-700">
+                We value your feedback. Share your thoughts and suggestions to make the Reunion Planner better.
+              </p>
+            </div>
+          </div>
+          <Button 
+            variant="outline" 
+            size="small" 
+            onClick={openFeedbackForm}
+            className="text-blue-600 border-blue-300 hover:bg-blue-50"
+          >
+            <span className="flex items-center space-x-1">
+              <span>Provide Feedback</span>
+              <SafeIcon icon={FiArrowRight} />
+            </span>
+          </Button>
+        </div>
+      </motion.div>
+
       {/* Budget Alert */}
       {showBudgetAlert && (
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }} 
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-red-50 border border-red-200 rounded-lg p-4"
         >
@@ -94,7 +126,11 @@ const Dashboard = () => {
               </div>
             </div>
             <Link to="/chapters/date-budget">
-              <Button variant="outline" size="small" className="text-red-600 border-red-300 hover:bg-red-50">
+              <Button
+                variant="outline"
+                size="small"
+                className="text-red-600 border-red-300 hover:bg-red-50"
+              >
                 <span className="flex items-center space-x-1">
                   <span>Review Budget</span>
                   <SafeIcon icon={FiArrowRight} />
@@ -174,7 +210,6 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-
           <div className="space-y-3">
             <h3 className="font-medium text-gray-900">Category Breakdown</h3>
             {budgetData.categories.map((category, index) => (
@@ -186,8 +221,8 @@ const Dashboard = () => {
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className={`h-2 rounded-full ${category.actual > category.planned ? 'bg-red-500' : 'bg-emerald-500'}`} 
+                  <div
+                    className={`h-2 rounded-full ${category.actual > category.planned ? 'bg-red-500' : 'bg-emerald-500'}`}
                     style={{ width: `${Math.min(100, (category.actual / category.planned) * 100)}%` }}
                   ></div>
                 </div>
@@ -217,9 +252,7 @@ const Dashboard = () => {
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600">Date:</span>
                 <span className="font-medium">
-                  {currentReunion.planned_date
-                    ? new Date(currentReunion.planned_date).toLocaleDateString()
-                    : 'Not set'}
+                  {currentReunion.planned_date ? new Date(currentReunion.planned_date).toLocaleDateString() : 'Not set'}
                 </span>
               </div>
               <div className="pt-4 border-t">
@@ -228,10 +261,7 @@ const Dashboard = () => {
                   <span className="text-sm font-medium">25%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                  <div
-                    className="bg-primary-600 h-2 rounded-full"
-                    style={{ width: '25%' }}
-                  ></div>
+                  <div className="bg-primary-600 h-2 rounded-full" style={{ width: '25%' }}></div>
                 </div>
               </div>
             </div>
@@ -284,15 +314,43 @@ const Dashboard = () => {
                 <span className="text-xs text-gray-500">{chapter.progress}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className={`h-2 rounded-full ${chapter.color}`}
-                  style={{ width: `${chapter.progress}%` }}
-                ></div>
+                <div className={`h-2 rounded-full ${chapter.color}`} style={{ width: `${chapter.progress}%` }}></div>
               </div>
             </div>
           ))}
         </div>
       </Card>
+
+      {/* Feedback Card (Alternative placement at the bottom) */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <Card hover className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2 flex items-center space-x-2">
+                <SafeIcon icon={FiMessageSquare} className="text-blue-600" />
+                <span>Your Opinion Matters</span>
+              </h2>
+              <p className="text-gray-700 mb-4">
+                Help us make the Reunion Planner better by sharing your thoughts, suggestions, or reporting any issues you've encountered.
+              </p>
+              <Button 
+                onClick={openFeedbackForm}
+                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700"
+              >
+                <span>Submit Feedback</span>
+                <SafeIcon icon={FiArrowRight} />
+              </Button>
+            </div>
+            <div className="hidden md:flex items-center justify-center h-24 w-24 bg-blue-100 rounded-full">
+              <SafeIcon icon={FiMessageSquare} className="text-4xl text-blue-500" />
+            </div>
+          </div>
+        </Card>
+      </motion.div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext({});
 
@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
       last_name: 'User'
     }
   });
-  
+
   // Always show as not loading and logged in
   const [loading] = useState(false);
 

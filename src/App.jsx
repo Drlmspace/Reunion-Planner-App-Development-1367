@@ -23,17 +23,20 @@ function App() {
               <Route path="/register" element={<Register />} />
               
               {/* Main app routes - always accessible in dev mode */}
-              <Route path="/" element={
-                <ProtectedRoute>
-                  <Layout />
-                </ProtectedRoute>
-              }>
+              <Route 
+                path="/" 
+                element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                }
+              >
                 <Route index element={<Dashboard />} />
                 <Route path="chapters/*" element={<ChapterRoutes />} />
               </Route>
             </Routes>
             
-            <Toaster
+            <Toaster 
               position="top-right"
               toastOptions={{
                 duration: 4000,
@@ -41,7 +44,7 @@ function App() {
                   background: '#363636',
                   color: '#fff',
                 },
-              }}
+              }} 
             />
           </div>
         </Router>

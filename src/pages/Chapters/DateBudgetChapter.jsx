@@ -6,11 +6,23 @@ import Input from '../../components/UI/Input';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../../common/SafeIcon';
 import toast from 'react-hot-toast';
+import { useReunion } from '../../contexts/ReunionContext';
 
-const { FiCalendar, FiDollarSign, FiPlus, FiEdit, FiTrash2, FiAlertCircle, FiLink, FiAlertTriangle } = FiIcons;
+const { FiCalendar, FiDollarSign, FiPlus, FiEdit, FiTrash2, FiAlertCircle, FiLink, FiAlertTriangle, FiSave } = FiIcons;
 
 const DateBudgetChapter = () => {
+  const { currentReunion, updateReunion } = useReunion();
   const [activeTab, setActiveTab] = useState('date');
+  
+  // Date planning state
+  const [dateData, setDateData] = useState({
+    preferredDate: currentReunion?.planned_date || '',
+    alternativeDate: '',
+    timePreferences: [],
+    duration: '2-3 hours',
+    considerations: []
+  });
+
   const [budgetItems, setBudgetItems] = useState([
     {
       id: 1,
@@ -91,6 +103,16 @@ const DateBudgetChapter = () => {
     'Miscellaneous'
   ];
 
+  const timeOptions = ['Morning', 'Afternoon', 'Evening', 'All Day'];
+  const considerationOptions = [
+    'National holidays',
+    'School schedules', 
+    'Weather patterns',
+    'Travel costs',
+    'Venue availability',
+    'Religious observances'
+  ];
+
   const filteredBudgetItems = showProgramItems
     ? budgetItems
     : budgetItems.filter(item => item.source !== 'program');
@@ -113,6 +135,34 @@ const DateBudgetChapter = () => {
       setShowBudgetAlert(false);
     }
   }, [totalActual, totalEstimated]);
+
+  const saveDateSettings = async () => {
+    if (dateData.preferredDate && currentReunion) {
+      await updateReunion(currentReunion.id, {
+        planned_date: dateData.preferredDate,
+        date_settings: dateData
+      });
+      toast.success('Date settings saved successfully!');
+    }
+  };
+
+  const handleTimePreferenceChange = (time) => {
+    setDateData({
+      ...dateData,
+      timePreferences: dateData.timePreferences.includes(time)
+        ? dateData.timePreferences.filter(t => t !== time)
+        : [...dateData.timePreferences, time]
+    });
+  };
+
+  const handleConsiderationChange = (consideration) => {
+    setDateData({
+      ...dateData,
+      considerations: dateData.considerations.includes(consideration)
+        ? dateData.considerations.filter(c => c !== consideration)
+        : [...dateData.considerations, consideration]
+    });
+  };
 
   const addBudgetItem = () => {
     if (newItem.category && newItem.item && newItem.estimated) {
@@ -230,14 +280,23 @@ const DateBudgetChapter = () => {
           className="space-y-6"
         >
           <Card>
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Date Selection</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-gray-900">Date Selection</h2>
+              <Button onClick={saveDateSettings} className="flex items-center space-x-2">
+                <SafeIcon icon={FiSave} />
+                <span>Save Settings</span>
+              </Button>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Preferred Date
+                  Preferred Date *
                 </label>
                 <input
                   type="date"
+                  value={dateData.preferredDate}
+                  onChange={(e) => setDateData({...dateData, preferredDate: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>
@@ -247,19 +306,24 @@ const DateBudgetChapter = () => {
                 </label>
                 <input
                   type="date"
+                  value={dateData.alternativeDate}
+                  onChange={(e) => setDateData({...dateData, alternativeDate: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>
             </div>
+            
             <div className="mt-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Time Preferences
               </label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {['Morning', 'Afternoon', 'Evening', 'All Day'].map(time => (
+                {timeOptions.map(time => (
                   <label key={time} className="flex items-center space-x-2">
                     <input
                       type="checkbox"
+                      checked={dateData.timePreferences.includes(time)}
+                      onChange={() => handleTimePreferenceChange(time)}
                       className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                     />
                     <span className="text-sm text-gray-700">{time}</span>
@@ -267,11 +331,16 @@ const DateBudgetChapter = () => {
                 ))}
               </div>
             </div>
+            
             <div className="mt-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Duration
               </label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+              <select 
+                value={dateData.duration}
+                onChange={(e) => setDateData({...dateData, duration: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
                 <option>2-3 hours</option>
                 <option>Half day (4-6 hours)</option>
                 <option>Full day (8+ hours)</option>
@@ -297,20 +366,16 @@ const DateBudgetChapter = () => {
                   </ul>
                 </div>
               </div>
+              
               <div className="space-y-3">
                 <h3 className="font-medium text-gray-900">Consider These Factors:</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {[
-                    'National holidays',
-                    'School schedules',
-                    'Weather patterns',
-                    'Travel costs',
-                    'Venue availability',
-                    'Religious observances'
-                  ].map(factor => (
+                  {considerationOptions.map(factor => (
                     <label key={factor} className="flex items-center space-x-2">
                       <input
                         type="checkbox"
+                        checked={dateData.considerations.includes(factor)}
+                        onChange={() => handleConsiderationChange(factor)}
                         className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                       />
                       <span className="text-sm text-gray-700">{factor}</span>
