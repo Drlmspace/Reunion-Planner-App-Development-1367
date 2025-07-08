@@ -10,7 +10,21 @@ import SafeIcon from '../common/SafeIcon';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-const { FiPlus, FiCalendar, FiUsers, FiDollarSign, FiCheckCircle, FiClock, FiMessageSquare, FiAlertTriangle, FiArrowRight, FiX, FiSave, FiRefreshCw, FiTrash2 } = FiIcons;
+const {
+  FiPlus,
+  FiCalendar,
+  FiUsers,
+  FiDollarSign,
+  FiCheckCircle,
+  FiClock,
+  FiMessageSquare,
+  FiAlertTriangle,
+  FiArrowRight,
+  FiX,
+  FiSave,
+  FiRefreshCw,
+  FiTrash2
+} = FiIcons;
 
 const Dashboard = () => {
   const { currentReunion, reunions, createReunion, setCurrentReunion, loading, deleteReunion } = useReunion();
@@ -25,8 +39,8 @@ const Dashboard = () => {
     planned_date: ''
   });
 
-  const MAX_REUNIONS = 2;
-  const canCreateReunion = reunions.length < MAX_REUNIONS;
+  // Unlimited reunions - removed the MAX_REUNIONS limit
+  const canCreateReunion = true;
 
   // Sample budget data - in a real app, this would come from the budget context or API
   const budgetData = {
@@ -65,30 +79,25 @@ const Dashboard = () => {
       toast.error('Please enter a reunion title');
       return;
     }
-    
+
     if (!newReunion.type) {
       toast.error('Please select a reunion type');
       return;
     }
 
-    if (reunions.length >= MAX_REUNIONS) {
-      toast.error(`You can only create up to ${MAX_REUNIONS} reunions. Please delete an existing reunion first.`);
-      return;
-    }
-
     try {
       const { data, error } = await createReunion(newReunion);
-      
+
       if (error) {
         toast.error('Failed to create reunion: ' + error.message);
         return;
       }
-      
+
       // Set the newly created reunion as current
       if (data) {
         setCurrentReunion(data);
       }
-      
+
       // Reset form and close modal
       setNewReunion({
         title: '',
@@ -97,7 +106,6 @@ const Dashboard = () => {
         planned_date: ''
       });
       setShowCreateForm(false);
-      
       // Success message is handled in the context
     } catch (error) {
       console.error('Error creating reunion:', error);
@@ -112,15 +120,15 @@ const Dashboard = () => {
 
   const confirmDeleteReunion = async () => {
     if (!reunionToDelete) return;
-    
+
     try {
       const { error } = await deleteReunion(reunionToDelete.id);
-      
+
       if (error) {
         toast.error('Failed to delete reunion: ' + error.message);
       } else {
         toast.success('Reunion deleted successfully');
-        
+
         // If we deleted the current reunion, select another one if available
         if (currentReunion && currentReunion.id === reunionToDelete.id) {
           const remainingReunions = reunions.filter(r => r.id !== reunionToDelete.id);
@@ -195,28 +203,12 @@ const Dashboard = () => {
         <Button
           onClick={() => setShowCreateForm(true)}
           className="flex items-center space-x-2"
-          disabled={loading || !canCreateReunion}
-          title={!canCreateReunion ? `Maximum limit of ${MAX_REUNIONS} reunions reached` : undefined}
+          disabled={loading}
         >
           <SafeIcon icon={FiPlus} />
           <span>New Reunion</span>
         </Button>
       </div>
-
-      {/* Reunion Limit Alert */}
-      {!canCreateReunion && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <div className="flex items-center space-x-3">
-            <SafeIcon icon={FiAlertTriangle} className="text-yellow-600" />
-            <div>
-              <h3 className="text-sm font-medium text-yellow-800">Reunion Limit Reached</h3>
-              <p className="text-sm text-yellow-700">
-                You can create up to {MAX_REUNIONS} reunions. Please delete an existing reunion to create a new one.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Create Reunion Modal */}
       {showCreateForm && (
@@ -375,15 +367,18 @@ const Dashboard = () => {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-gray-900">Your Reunions</h2>
           <div className="text-sm text-gray-500">
-            {reunions.length} of {MAX_REUNIONS} reunions
+            {reunions.length} reunions
           </div>
         </div>
-
         <div className="space-y-4">
           {reunions.map(reunion => (
-            <div 
-              key={reunion.id} 
-              className={`p-4 border rounded-lg ${currentReunion?.id === reunion.id ? 'border-blue-400 bg-blue-50' : 'hover:bg-gray-50'}`}
+            <div
+              key={reunion.id}
+              className={`p-4 border rounded-lg ${
+                currentReunion?.id === reunion.id
+                  ? 'border-blue-400 bg-blue-50'
+                  : 'hover:bg-gray-50'
+              }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1">
@@ -403,8 +398,8 @@ const Dashboard = () => {
                 </div>
                 <div className="flex items-center space-x-2 ml-4">
                   {currentReunion?.id !== reunion.id && (
-                    <Button 
-                      size="small" 
+                    <Button
+                      size="small"
                       onClick={() => switchReunion(reunion)}
                       className="flex items-center space-x-1"
                     >
@@ -412,8 +407,8 @@ const Dashboard = () => {
                       <span>Switch</span>
                     </Button>
                   )}
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="small"
                     onClick={() => handleDeleteReunion(reunion)}
                     className="text-red-600 hover:bg-red-50"
@@ -424,7 +419,6 @@ const Dashboard = () => {
               </div>
             </div>
           ))}
-
           {reunions.length === 0 && (
             <div className="text-center py-6">
               <SafeIcon icon={FiCalendar} className="text-4xl text-gray-300 mb-3 mx-auto" />
@@ -476,14 +470,22 @@ const Dashboard = () => {
               <div key={index} className="space-y-1">
                 <div className="flex justify-between items-center text-sm">
                   <span className="font-medium">{category.name}</span>
-                  <span className={category.actual > category.planned ? 'text-red-600' : 'text-gray-600'}>
+                  <span
+                    className={
+                      category.actual > category.planned ? 'text-red-600' : 'text-gray-600'
+                    }
+                  >
                     ${category.actual.toLocaleString()} / ${category.planned.toLocaleString()}
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className={`h-2 rounded-full ${category.actual > category.planned ? 'bg-red-500' : 'bg-emerald-500'}`}
-                    style={{ width: `${Math.min(100, (category.actual / category.planned) * 100)}%` }}
+                    className={`h-2 rounded-full ${
+                      category.actual > category.planned ? 'bg-red-500' : 'bg-emerald-500'
+                    }`}
+                    style={{
+                      width: `${Math.min(100, (category.actual / category.planned) * 100)}%`
+                    }}
                   ></div>
                 </div>
               </div>
@@ -606,7 +608,10 @@ const Dashboard = () => {
               <p className="text-gray-700 mb-4">
                 Help us make the Reunion Planner better by sharing your thoughts, suggestions, or reporting any issues you've encountered.
               </p>
-              <Button onClick={openFeedbackForm} className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700">
+              <Button
+                onClick={openFeedbackForm}
+                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700"
+              >
                 <span>Submit Feedback</span>
                 <SafeIcon icon={FiArrowRight} />
               </Button>
