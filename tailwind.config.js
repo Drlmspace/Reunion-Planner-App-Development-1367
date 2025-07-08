@@ -76,9 +76,6 @@ export default {
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-up': 'slideUp 0.3s ease-out',
         'bounce-gentle': 'bounceGentle 2s infinite',
-        'gradient-shift': 'gradientShift 15s ease infinite',
-        'float': 'float 6s ease-in-out infinite',
-        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -92,27 +89,8 @@ export default {
         bounceGentle: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-5px)' },
-        },
-        gradientShift: {
-          '0%': { backgroundPosition: '0% 50%' },
-          '50%': { backgroundPosition: '100% 50%' },
-          '100%': { backgroundPosition: '0% 50%' },
-        },
-        float: {
-          '0%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-10px)' },
-          '100%': { transform: 'translateY(0px)' },
-        },
-        pulseGlow: {
-          '0%': { boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)' },
-          '50%': { boxShadow: '0 0 30px rgba(255, 255, 255, 0.2)' },
-          '100%': { boxShadow: '0 0 20px rgba(255, 255, 255, 0.1)' },
-        },
-      },
-      backdropFilter: {
-        'none': 'none',
-        'blur': 'blur(20px)',
-      },
+        }
+      }
     },
   },
   plugins: [],

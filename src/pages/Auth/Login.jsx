@@ -8,7 +8,7 @@ import Card from '../../components/UI/Card';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../../common/SafeIcon';
 
-const { FiMail, FiLock, FiUsers, FiStar } = FiIcons;
+const { FiMail, FiLock, FiUsers } = FiIcons;
 
 const Login = () => {
   const { user, signIn } = useAuth();
@@ -26,24 +26,24 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen animated-gradient flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 rounded-full gradient-bg flex items-center justify-center pulse-glow">
-              <SafeIcon icon={FiStar} className="text-4xl text-white" />
+          <div className="flex justify-center mb-4">
+            <div className="bg-primary-600 p-3 rounded-full">
+              <SafeIcon icon={FiUsers} className="text-3xl text-white" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-white mb-4">Welcome Back</h1>
-          <p className="text-white/70 text-lg">Sign in to your Reunion Planner account</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+          <p className="text-gray-600">Sign in to your Reunion Planner account</p>
         </div>
 
-        <Card className="backdrop-blur-strong">
+        <Card>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <Input
               label="Email"
               type="email"
-              {...register('email', {
+              {...register('email', { 
                 required: 'Email is required',
                 pattern: {
                   value: /\S+@\S+\.\S+/,
@@ -57,7 +57,7 @@ const Login = () => {
             <Input
               label="Password"
               type="password"
-              {...register('password', {
+              {...register('password', { 
                 required: 'Password is required',
                 minLength: {
                   value: 6,
@@ -73,17 +73,15 @@ const Login = () => {
               fullWidth
               loading={loading}
               disabled={loading}
-              variant="gradient"
-              size="large"
             >
               Sign In
             </Button>
           </form>
 
-          <div className="mt-8 text-center">
-            <p className="text-white/70">
+          <div className="mt-6 text-center">
+            <p className="text-gray-600">
               Don't have an account?{' '}
-              <Link to="/register" className="text-white font-medium hover:text-white/80 transition-colors">
+              <Link to="/register" className="text-primary-600 hover:text-primary-700 font-medium">
                 Sign up
               </Link>
             </p>

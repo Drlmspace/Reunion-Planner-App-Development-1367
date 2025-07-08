@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useReunion } from '../contexts/ReunionContext';
 import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
@@ -8,18 +8,13 @@ import SafeIcon from '../common/SafeIcon';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-const { 
-  FiPlus, FiCalendar, FiUsers, FiDollarSign, FiCheckCircle, 
-  FiClock, FiInfo, FiAlertTriangle, FiArrowRight, FiTrendingUp, 
-  FiStar, FiTarget, FiZap, FiHeart, FiGift 
-} = FiIcons;
+const { FiPlus, FiCalendar, FiUsers, FiDollarSign, FiCheckCircle, FiClock, FiInfo, FiAlertTriangle, FiArrowRight } = FiIcons;
 
 const Dashboard = () => {
   const { currentReunion, reunions } = useReunion();
   const [showBudgetAlert, setShowBudgetAlert] = useState(false);
-  const [celebration, setCelebration] = useState(false);
 
-  // Sample budget data
+  // Sample budget data - in a real app, this would come from the budget context or API
   const budgetData = {
     planned: 5000,
     actual: 5250,
@@ -33,227 +28,95 @@ const Dashboard = () => {
     ]
   };
 
+  // Check if budget is exceeded and show alert
   useEffect(() => {
     if (budgetData.actual > budgetData.planned) {
       setShowBudgetAlert(true);
       toast.error('Budget exceeded! Please review your expenses.', {
         duration: 5000,
-        icon: '⚠️',
-        style: {
-          background: 'rgba(26,26,46,0.2)',
-          backdropFilter: 'blur(20px)',
-          color: '#ffd700',
-          border: '1px solid rgba(255,215,0,0.2)',
-        }
+        icon: '⚠️'
       });
     }
   }, [budgetData.actual, budgetData.planned]);
 
   const quickStats = [
-    { 
-      label: 'Total Reunions', 
-      value: reunions.length, 
-      icon: FiUsers, 
-      gradient: 'gradient-neon-1', 
-      description: 'Active projects',
-      emoji: '👥'
-    },
-    { 
-      label: 'Active Planning', 
-      value: 1, 
-      icon: FiClock, 
-      gradient: 'gradient-neon-2', 
-      description: 'In progress',
-      emoji: '⏰'
-    },
-    { 
-      label: 'Completed', 
-      value: 0, 
-      icon: FiCheckCircle, 
-      gradient: 'gradient-bg-4', 
-      description: 'Finished events',
-      emoji: '✅'
-    },
+    { label: 'Total Reunions', value: reunions.length, icon: FiUsers, color: 'text-blue-600' },
+    { label: 'Active Planning', value: 1, icon: FiClock, color: 'text-orange-600' },
+    { label: 'Completed', value: 0, icon: FiCheckCircle, color: 'text-green-600' },
     { 
       label: 'Budget Status', 
-      value: budgetData.remaining >= 0 ? `$${budgetData.remaining} left` : `$${Math.abs(budgetData.remaining)} over`,
+      value: budgetData.remaining >= 0 ? `$${budgetData.remaining} left` : `$${Math.abs(budgetData.remaining)} over`, 
       icon: FiDollarSign, 
-      gradient: budgetData.remaining >= 0 ? 'gradient-bg-4' : 'gradient-neon-2', 
-      description: 'Financial status',
-      emoji: '💰'
+      color: budgetData.remaining >= 0 ? 'text-green-600' : 'text-red-600'
     }
   ];
 
   const recentActivity = [
-    { action: 'Created new reunion', time: '2 hours ago', type: 'create', icon: FiPlus, emoji: '🎉' },
-    { action: 'Updated venue details', time: '1 day ago', type: 'update', icon: FiTarget, emoji: '📍' },
-    { action: 'Added committee member', time: '3 days ago', type: 'add', icon: FiUsers, emoji: '👤' }
+    { action: 'Created new reunion', time: '2 hours ago', type: 'create' },
+    { action: 'Updated venue details', time: '1 day ago', type: 'update' },
+    { action: 'Added committee member', time: '3 days ago', type: 'add' }
   ];
-
-  const chapters = [
-    { name: 'Vision & Intention', progress: 100, gradient: 'gradient-neon-1', emoji: '🎯' },
-    { name: 'Planning Committee', progress: 75, gradient: 'gradient-neon-2', emoji: '👥' },
-    { name: 'Date & Budget', progress: 50, gradient: 'gradient-neon-3', emoji: '📅' },
-    { name: 'Venue Planning', progress: 25, gradient: 'gradient-bg-4', emoji: '📍' },
-    { name: 'Program Builder', progress: 0, gradient: 'gradient-bg-5', emoji: '⏰' },
-    { name: 'Communication', progress: 0, gradient: 'gradient-bg-6', emoji: '💬' }
-  ];
-
-  const triggerCelebration = () => {
-    setCelebration(true);
-    setTimeout(() => setCelebration(false), 600);
-  };
 
   return (
-    <div className="space-y-8 relative">
-      {/* Floating decorative elements with Cleveland colors */}
-      <motion.div
-        className="absolute top-10 right-10 w-4 h-4 bg-cleveland-gold rounded-full opacity-60"
-        animate={{ 
-          y: [-20, 20, -20],
-          opacity: [0.6, 1, 0.6],
-          scale: [1, 1.2, 1]
-        }}
-        transition={{ duration: 4, repeat: Infinity }}
-      />
-      <motion.div
-        className="absolute top-32 left-10 w-3 h-3 bg-cleveland-red rounded-full opacity-40"
-        animate={{ 
-          y: [20, -20, 20],
-          opacity: [0.4, 0.8, 0.4],
-          rotate: [0, 180, 360]
-        }}
-        transition={{ duration: 6, repeat: Infinity, delay: 2 }}
-      />
-      <motion.div
-        className="absolute bottom-20 right-1/3 w-2 h-2 bg-cleveland-green rounded-full opacity-50"
-        animate={{ 
-          x: [15, -15, 15],
-          opacity: [0.5, 0.9, 0.5],
-          scale: [1, 1.3, 1]
-        }}
-        transition={{ duration: 5, repeat: Infinity, delay: 1 }}
-      />
-
+    <div className="space-y-8">
       {/* Development Mode Notice */}
       <motion.div 
-        initial={{ opacity: 0, y: -20, scale: 0.9 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ type: "spring", stiffness: 100 }}
+        initial={{ opacity: 0, y: -10 }} 
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-orange-50 border border-orange-200 rounded-lg p-4"
       >
-        <Card glow className="overflow-hidden">
-          <div className="flex items-center space-x-4">
-            <motion.div 
-              className="w-12 h-12 rounded-full gradient-neon-3 flex items-center justify-center float"
-              whileHover={{ rotate: 360, scale: 1.1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <SafeIcon icon={FiZap} className="text-white text-xl" />
-            </motion.div>
-            <div>
-              <motion.h3 
-                className="text-lg font-semibold text-cleveland-gold font-fun"
-                initial={{ x: -20 }}
-                animate={{ x: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                Development Mode <span className="emoji-bounce">⚡</span>
-              </motion.h3>
-              <motion.p 
-                className="text-white/70"
-                initial={{ x: -20 }}
-                animate={{ x: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                Authentication is disabled. You're logged in as a developer with mock data. All features are accessible for testing! 
-                <span className="ml-2 text-cleveland-gold">🚀</span>
-              </motion.p>
-            </div>
+        <div className="flex items-center space-x-3">
+          <SafeIcon icon={FiInfo} className="text-orange-600" />
+          <div>
+            <h3 className="text-sm font-medium text-orange-800">Development Mode</h3>
+            <p className="text-sm text-orange-700">
+              Authentication is disabled. You're logged in as a developer with mock data. All features are accessible for testing and development.
+            </p>
           </div>
-        </Card>
+        </div>
       </motion.div>
 
       {/* Budget Alert */}
-      <AnimatePresence>
-        {showBudgetAlert && (
-          <motion.div 
-            initial={{ opacity: 0, y: -20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 100 }}
-          >
-            <Card className="border-cleveland-red glow-border">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <motion.div 
-                    className="w-12 h-12 rounded-full gradient-neon-2 flex items-center justify-center pulse-rainbow"
-                    animate={{ rotate: [0, 10, -10, 0] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    <SafeIcon icon={FiAlertTriangle} className="text-white text-xl" />
-                  </motion.div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-cleveland-red font-fun">
-                      Budget Alert <span className="emoji-bounce">⚠️</span>
-                    </h3>
-                    <p className="text-white/70">
-                      Your budget of <span className="text-cleveland-gold">${budgetData.planned.toLocaleString()}</span> has been exceeded by <span className="text-cleveland-red">${Math.abs(budgetData.remaining).toLocaleString()}</span> 
-                      <span className="ml-2">💸</span>
-                    </p>
-                  </div>
-                </div>
-                <Link to="/chapters/date-budget">
-                  <Button variant="outline" size="small" className="btn-funky">
-                    <span className="flex items-center space-x-2">
-                      <span>Review Budget</span>
-                      <SafeIcon icon={FiArrowRight} />
-                    </span>
-                  </Button>
-                </Link>
+      {showBudgetAlert && (
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }} 
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-red-50 border border-red-200 rounded-lg p-4"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <SafeIcon icon={FiAlertTriangle} className="text-red-600" />
+              <div>
+                <h3 className="text-sm font-medium text-red-800">Budget Alert</h3>
+                <p className="text-sm text-red-700">
+                  Your budget of ${budgetData.planned.toLocaleString()} has been exceeded by ${Math.abs(budgetData.remaining).toLocaleString()}
+                </p>
               </div>
-            </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </div>
+            <Link to="/chapters/date-budget">
+              <Button variant="outline" size="small" className="text-red-600 border-red-300 hover:bg-red-50">
+                <span className="flex items-center space-x-1">
+                  <span>Review Budget</span>
+                  <SafeIcon icon={FiArrowRight} />
+                </span>
+              </Button>
+            </Link>
+          </div>
+        </motion.div>
+      )}
 
       {/* Header */}
       <div className="flex items-center justify-between">
-        <motion.div
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          <h1 className="text-4xl font-bold text-gradient mb-2 font-fun">
-            Dashboard <span className="text-3xl emoji-bounce">🎊</span>
-          </h1>
-          <p className="text-white/70 text-lg">
-            Welcome back! Here's what's happening with your 
-            <span className="text-cleveland-gold font-semibold"> reunion planning</span>
-            <motion.span 
-              className="ml-2 text-xl"
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              ✨
-            </motion.span>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-600 mt-1">
+            Welcome back! Here's what's happening with your reunion planning.
           </p>
-        </motion.div>
-        
-        <motion.div
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-        >
-          <Button 
-            variant="funky" 
-            className="flex items-center space-x-2"
-            onClick={triggerCelebration}
-          >
-            <SafeIcon icon={FiPlus} />
-            <span>New Reunion</span>
-            <span className="text-lg">🎉</span>
-          </Button>
-        </motion.div>
+        </div>
+        <Button className="flex items-center space-x-2">
+          <SafeIcon icon={FiPlus} />
+          <span>New Reunion</span>
+        </Button>
       </div>
 
       {/* Quick Stats */}
@@ -261,348 +124,175 @@ const Dashboard = () => {
         {quickStats.map((stat, index) => (
           <motion.div
             key={stat.label}
-            initial={{ opacity: 0, y: 50, scale: 0.8 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ 
-              delay: index * 0.1, 
-              type: "spring", 
-              stiffness: 100,
-              damping: 10 
-            }}
-            className={celebration ? 'celebrate' : ''}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
           >
-            <Card hover glow className="text-center group relative overflow-hidden shadow-cleveland">
-              <motion.div 
-                className="flex items-center justify-center mb-4"
-                whileHover={{ scale: 1.1 }}
-              >
-                <div className={`w-16 h-16 rounded-2xl ${stat.gradient} flex items-center justify-center float group-hover:scale-110 transition-transform duration-300 morph-shape`}>
-                  <SafeIcon icon={stat.icon} className="text-2xl text-white" />
+            <Card hover padding="normal" className="text-center">
+              <div className="flex items-center justify-center mb-3">
+                <div className="bg-gray-100 p-3 rounded-full">
+                  <SafeIcon icon={stat.icon} className={`text-2xl ${stat.color}`} />
                 </div>
-              </motion.div>
-              
-              <motion.h3 
-                className="text-2xl font-bold text-cleveland-gold mb-1 font-space"
-                whileHover={{ scale: 1.05 }}
-              >
-                {stat.value}
-              </motion.h3>
-              
-              <p className="text-white/90 font-medium">{stat.label}</p>
-              <p className="text-white/60 text-sm mt-1 flex items-center justify-center space-x-1">
-                <span>{stat.description}</span>
-                <span className="text-lg">{stat.emoji}</span>
-              </p>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900">{stat.value}</h3>
+              <p className="text-gray-600 text-sm">{stat.label}</p>
             </Card>
           </motion.div>
         ))}
       </div>
 
       {/* Budget Overview */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.5, duration: 0.6 }}
-      >
-        <Card className="overflow-hidden shadow-cleveland" glow>
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center space-x-3">
-              <motion.div 
-                className="w-12 h-12 rounded-xl gradient-bg-4 flex items-center justify-center float"
-                whileHover={{ rotate: 360, scale: 1.1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <SafeIcon icon={FiDollarSign} className="text-2xl text-white" />
-              </motion.div>
-              <div>
-                <h2 className="text-2xl font-bold text-cleveland-gold font-fun">
-                  Budget Overview <span className="text-xl">💰</span>
-                </h2>
-                <p className="text-white/70">Track your spending and budget allocation</p>
+      <Card>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 flex items-center space-x-2">
+            <SafeIcon icon={FiDollarSign} className="text-emerald-600" />
+            <span>Budget Overview</span>
+          </h2>
+          <Link to="/chapters/date-budget">
+            <Button variant="outline" size="small">
+              <span className="flex items-center space-x-1">
+                <span>Budget Details</span>
+                <SafeIcon icon={FiArrowRight} />
+              </span>
+            </Button>
+          </Link>
+        </div>
+        <div className="space-y-6">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <div className="bg-gray-50 p-4 rounded-lg flex-1">
+              <div className="text-sm text-gray-500 mb-1">Planned Budget</div>
+              <div className="text-2xl font-bold text-gray-900">${budgetData.planned.toLocaleString()}</div>
+            </div>
+            <div className="bg-gray-50 p-4 rounded-lg flex-1">
+              <div className="text-sm text-gray-500 mb-1">Actual Expenses</div>
+              <div className="text-2xl font-bold text-gray-900">${budgetData.actual.toLocaleString()}</div>
+            </div>
+            <div className={`p-4 rounded-lg flex-1 ${budgetData.remaining >= 0 ? 'bg-green-50' : 'bg-red-50'}`}>
+              <div className="text-sm text-gray-500 mb-1">{budgetData.remaining >= 0 ? 'Remaining' : 'Over Budget'}</div>
+              <div className={`text-2xl font-bold ${budgetData.remaining >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                ${Math.abs(budgetData.remaining).toLocaleString()}
               </div>
             </div>
-            <Link to="/chapters/date-budget">
-              <Button variant="outline" size="small" className="border-cleveland-gold text-cleveland-gold hover:bg-cleveland-gold hover:text-black">
-                <span className="flex items-center space-x-2">
-                  <span>Budget Details</span>
-                  <SafeIcon icon={FiArrowRight} />
-                </span>
-              </Button>
-            </Link>
           </div>
-          
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                { label: 'Planned Budget', value: budgetData.planned, emoji: '📊', color: 'text-cleveland-gold' },
-                { label: 'Actual Expenses', value: budgetData.actual, emoji: '💸', color: 'text-cleveland-red' },
-                { 
-                  label: budgetData.remaining >= 0 ? 'Remaining' : 'Over Budget', 
-                  value: Math.abs(budgetData.remaining),
-                  emoji: budgetData.remaining >= 0 ? '💚' : '🔴',
-                  color: budgetData.remaining >= 0 ? 'text-cleveland-green' : 'text-cleveland-red'
-                }
-              ].map((item, index) => (
-                <motion.div
-                  key={index}
-                  className="glass-card p-6 rounded-2xl relative overflow-hidden"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 + index * 0.1 }}
-                  whileHover={{ scale: 1.02 }}
-                >
-                  <div className="text-white/70 mb-2 flex items-center space-x-2">
-                    <span>{item.label}</span>
-                    <span className="text-lg">{item.emoji}</span>
-                  </div>
-                  <div className={`text-3xl font-bold ${item.color} font-space`}>
-                    ${item.value.toLocaleString()}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
 
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-cleveland-gold flex items-center space-x-2">
-                <span>Category Breakdown</span>
-                <span className="text-xl">📈</span>
-              </h3>
-              {budgetData.categories.map((category, index) => (
-                <motion.div 
-                  key={index} 
-                  className="space-y-3"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.8 + index * 0.1 }}
-                >
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium text-white">{category.name}</span>
-                    <span className={`font-semibold ${
-                      category.actual > category.planned ? 'text-cleveland-red' : 'text-cleveland-gold'
-                    }`}>
-                      ${category.actual.toLocaleString()} / ${category.planned.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
-                    <motion.div 
-                      className={`h-3 rounded-full progress-rainbow ${
-                        category.actual > category.planned ? 'gradient-neon-2' : 'gradient-bg-4'
-                      }`}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${Math.min(100, (category.actual / category.planned) * 100)}%` }}
-                      transition={{ duration: 1, delay: 0.8 + index * 0.2 }}
-                    />
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+          <div className="space-y-3">
+            <h3 className="font-medium text-gray-900">Category Breakdown</h3>
+            {budgetData.categories.map((category, index) => (
+              <div key={index} className="space-y-1">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-medium">{category.name}</span>
+                  <span className={category.actual > category.planned ? 'text-red-600' : 'text-gray-600'}>
+                    ${category.actual.toLocaleString()} / ${category.planned.toLocaleString()}
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className={`h-2 rounded-full ${category.actual > category.planned ? 'bg-red-500' : 'bg-emerald-500'}`} 
+                    style={{ width: `${Math.min(100, (category.actual / category.planned) * 100)}%` }}
+                  ></div>
+                </div>
+              </div>
+            ))}
           </div>
-        </Card>
-      </motion.div>
+        </div>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Current Reunion */}
-        <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.7, duration: 0.6 }}
-        >
-          <Card glow className="shadow-cleveland">
-            <div className="flex items-center space-x-3 mb-6">
-              <motion.div 
-                className="w-12 h-12 rounded-xl gradient-neon-1 flex items-center justify-center float"
-                whileHover={{ rotate: 360 }}
-                transition={{ duration: 0.5 }}
-              >
-                <SafeIcon icon={FiCalendar} className="text-2xl text-white" />
-              </motion.div>
+        <Card>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-gray-900">Current Reunion</h2>
+            <SafeIcon icon={FiCalendar} className="text-gray-400" />
+          </div>
+          {currentReunion ? (
+            <div className="space-y-4">
               <div>
-                <h2 className="text-xl font-bold text-cleveland-gold font-fun">
-                  Current Reunion <span className="text-lg">🎪</span>
-                </h2>
-                <p className="text-white/70">Your active planning project</p>
+                <h3 className="font-medium text-gray-900">{currentReunion.title}</h3>
+                <p className="text-sm text-gray-600">{currentReunion.description}</p>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Type:</span>
+                <span className="font-medium capitalize">{currentReunion.type}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Date:</span>
+                <span className="font-medium">
+                  {currentReunion.planned_date
+                    ? new Date(currentReunion.planned_date).toLocaleDateString()
+                    : 'Not set'}
+                </span>
+              </div>
+              <div className="pt-4 border-t">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Progress</span>
+                  <span className="text-sm font-medium">25%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                  <div
+                    className="bg-primary-600 h-2 rounded-full"
+                    style={{ width: '25%' }}
+                  ></div>
+                </div>
               </div>
             </div>
-            
-            {currentReunion ? (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-cleveland-gold mb-2 flex items-center space-x-2">
-                    <span>{currentReunion.title}</span>
-                    <span className="text-xl">🎊</span>
-                  </h3>
-                  <p className="text-white/70">{currentReunion.description}</p>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="glass-card p-4 rounded-xl">
-                    <span className="text-white/70 flex items-center space-x-1">
-                      <span>Type:</span>
-                      <span>🏷️</span>
-                    </span>
-                    <div className="font-semibold text-cleveland-gold capitalize mt-1">{currentReunion.type}</div>
-                  </div>
-                  <div className="glass-card p-4 rounded-xl">
-                    <span className="text-white/70 flex items-center space-x-1">
-                      <span>Date:</span>
-                      <span>📅</span>
-                    </span>
-                    <div className="font-semibold text-cleveland-gold mt-1">
-                      {currentReunion.planned_date 
-                        ? new Date(currentReunion.planned_date).toLocaleDateString() 
-                        : 'Not set'
-                      }
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-white/70 flex items-center space-x-1">
-                      <span>Progress</span>
-                      <span>📊</span>
-                    </span>
-                    <span className="text-cleveland-gold font-semibold">25%</span>
-                  </div>
-                  <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
-                    <motion.div 
-                      className="gradient-neon-1 h-3 rounded-full progress-rainbow"
-                      initial={{ width: 0 }}
-                      animate={{ width: '25%' }}
-                      transition={{ duration: 1, delay: 1 }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <motion.div 
-                  className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-4 morph-shape"
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <SafeIcon icon={FiCalendar} className="text-2xl text-white/50" />
-                </motion.div>
-                <p className="text-white/70 mb-6 flex items-center justify-center space-x-2">
-                  <span>No reunion selected</span>
-                  <span className="text-xl">😢</span>
-                </p>
-                <Button variant="outline" size="small" className="border-cleveland-gold text-cleveland-gold">
-                  Create Your First Reunion 🚀
-                </Button>
-              </div>
-            )}
-          </Card>
-        </motion.div>
+          ) : (
+            <div className="text-center py-8">
+              <SafeIcon icon={FiCalendar} className="text-4xl text-gray-300 mb-4" />
+              <p className="text-gray-500 mb-4">No reunion selected</p>
+              <Button variant="outline" size="small">
+                Create Your First Reunion
+              </Button>
+            </div>
+          )}
+        </Card>
 
         {/* Recent Activity */}
-        <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-        >
-          <Card glow className="shadow-cleveland">
-            <div className="flex items-center space-x-3 mb-6">
-              <motion.div 
-                className="w-12 h-12 rounded-xl gradient-neon-3 flex items-center justify-center float"
-                whileHover={{ rotate: 360 }}
-                transition={{ duration: 0.5 }}
-              >
-                <SafeIcon icon={FiClock} className="text-2xl text-white" />
-              </motion.div>
-              <div>
-                <h2 className="text-xl font-bold text-cleveland-green font-fun">
-                  Recent Activity <span className="text-lg">⚡</span>
-                </h2>
-                <p className="text-white/70">Latest planning updates</p>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              {recentActivity.map((activity, index) => (
-                <motion.div
-                  key={index}
-                  className="flex items-center space-x-4 p-4 glass-card rounded-xl group hover:bg-white/15 transition-all duration-300"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.9 + index * 0.1 }}
-                  whileHover={{ x: 5, scale: 1.02 }}
-                >
-                  <motion.div 
-                    className="w-8 h-8 rounded-lg gradient-neon-2 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform"
-                    whileHover={{ rotate: 360 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <SafeIcon icon={activity.icon} className="text-sm text-white" />
-                  </motion.div>
-                  <div className="flex-1">
-                    <p className="font-medium text-white flex items-center space-x-2">
-                      <span>{activity.action}</span>
-                      <span className="text-lg">{activity.emoji}</span>
-                    </p>
-                    <p className="text-white/60 text-sm">{activity.time}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </Card>
-        </motion.div>
-      </div>
-
-      {/* Chapter Progress */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1, duration: 0.6 }}
-      >
-        <Card glow className="shadow-cleveland">
-          <div className="flex items-center space-x-3 mb-8">
-            <motion.div 
-              className="w-12 h-12 rounded-xl gradient-bg-5 flex items-center justify-center float"
-              whileHover={{ rotate: 360, scale: 1.1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <SafeIcon icon={FiTrendingUp} className="text-2xl text-white" />
-            </motion.div>
-            <div>
-              <h2 className="text-2xl font-bold text-gradient font-fun">
-                Chapter Progress <span className="text-xl">📚</span>
-              </h2>
-              <p className="text-white/70">Track your planning journey</p>
-            </div>
+        <Card>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
+            <SafeIcon icon={FiClock} className="text-gray-400" />
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {chapters.map((chapter, index) => (
-              <motion.div
-                key={index}
-                className="glass-card p-6 rounded-2xl group hover:bg-white/15 transition-all duration-300"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.1 + index * 0.1 }}
-                whileHover={{ scale: 1.02, y: -2 }}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-cleveland-gold flex items-center space-x-2">
-                    <span>{chapter.name}</span>
-                    <span className="text-lg">{chapter.emoji}</span>
-                  </h3>
-                  <span className="text-white/70 font-medium">{chapter.progress}%</span>
+          <div className="space-y-4">
+            {recentActivity.map((activity, index) => (
+              <div key={index} className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-primary-600 rounded-full flex-shrink-0"></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">{activity.action}</p>
+                  <p className="text-xs text-gray-500">{activity.time}</p>
                 </div>
-                <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
-                  <motion.div 
-                    className={`${chapter.gradient} progress-rainbow`}
-                    style={{ height: '100%', borderRadius: '9999px' }}
-                    initial={{ width: 0 }}
-                    animate={{ width: `${chapter.progress}%` }}
-                    transition={{ duration: 1, delay: 1.2 + index * 0.1 }}
-                  />
-                </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </Card>
-      </motion.div>
+      </div>
+
+      {/* Chapter Progress */}
+      <Card>
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">Chapter Progress</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[
+            { name: 'Vision & Intention', progress: 100, color: 'bg-green-500' },
+            { name: 'Planning Committee', progress: 75, color: 'bg-blue-500' },
+            { name: 'Date & Budget', progress: 50, color: 'bg-yellow-500' },
+            { name: 'Venue Planning', progress: 25, color: 'bg-red-500' },
+            { name: 'Program Builder', progress: 0, color: 'bg-gray-300' },
+            { name: 'Communication', progress: 0, color: 'bg-gray-300' }
+          ].map((chapter, index) => (
+            <div key={index} className="p-4 border rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-medium text-gray-900 text-sm">{chapter.name}</h3>
+                <span className="text-xs text-gray-500">{chapter.progress}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  className={`h-2 rounded-full ${chapter.color}`}
+                  style={{ width: `${chapter.progress}%` }}
+                ></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 };

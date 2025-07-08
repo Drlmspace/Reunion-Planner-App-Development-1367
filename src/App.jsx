@@ -1,8 +1,8 @@
 import React from 'react';
-import {HashRouter as Router, Routes, Route} from 'react-router-dom';
-import {Toaster} from 'react-hot-toast';
-import {AuthProvider} from './contexts/AuthContext';
-import {ReunionProvider} from './contexts/ReunionContext';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './contexts/AuthContext';
+import { ReunionProvider } from './contexts/ReunionContext';
 import Layout from './components/Layout/Layout';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Auth/Login';
@@ -33,7 +33,7 @@ function App() {
               </Route>
             </Routes>
             
-            <Toaster 
+            <Toaster
               position="top-right"
               toastOptions={{
                 duration: 4000,
