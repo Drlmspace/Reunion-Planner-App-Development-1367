@@ -174,7 +174,7 @@ const Settings = () => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
+
     toast.success('Data exported successfully!');
   };
 
@@ -186,7 +186,6 @@ const Settings = () => {
     reader.onload = (e) => {
       try {
         const data = JSON.parse(e.target.result);
-        
         // Validate the data structure
         if (data.reunions && data.accountData) {
           // In a real app, you'd restore this data to the database
@@ -206,13 +205,23 @@ const Settings = () => {
     if (window.confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
       // Clear specific reunion planner data
       const keysToRemove = [
-        'demoReunions', 'currentReunion', 'userProfile', 'theme', 'currency',
-        'dateFormat', 'language', 'autoSave', 'emailNotifications', 'pushNotifications',
-        'weeklyDigest', 'taskReminders', 'budgetAlerts', 'rsvpUpdates'
+        'demoReunions',
+        'currentReunion',
+        'userProfile',
+        'theme',
+        'currency',
+        'dateFormat',
+        'language',
+        'autoSave',
+        'emailNotifications',
+        'pushNotifications',
+        'weeklyDigest',
+        'taskReminders',
+        'budgetAlerts',
+        'rsvpUpdates'
       ];
-      
+
       keysToRemove.forEach(key => localStorage.removeItem(key));
-      
       toast.success('All data cleared successfully! Please refresh the page.');
       
       // Refresh after a short delay
@@ -231,7 +240,7 @@ const Settings = () => {
         language: 'en',
         autoSave: true
       });
-      
+
       setNotifications({
         emailNotifications: true,
         pushNotifications: true,
@@ -264,11 +273,6 @@ const Settings = () => {
         </div>
         <div className="flex items-center space-x-4">
           <SafeIcon icon={FiSettings} className="text-2xl text-blue-600" />
-          {!isSupabaseAvailable && (
-            <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
-              Demo Mode
-            </span>
-          )}
         </div>
       </div>
 
@@ -545,7 +549,6 @@ const Settings = () => {
                   </button>
                 </div>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Currency
@@ -562,7 +565,6 @@ const Settings = () => {
                   <option value="AUD">AUD ($)</option>
                 </select>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Date Format
@@ -577,7 +579,6 @@ const Settings = () => {
                   <option value="YYYY-MM-DD">YYYY-MM-DD</option>
                 </select>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Language
@@ -594,7 +595,6 @@ const Settings = () => {
                 </select>
               </div>
             </div>
-
             <div className="mt-6">
               <div className="flex items-center space-x-2">
                 <input
@@ -609,7 +609,6 @@ const Settings = () => {
                 </label>
               </div>
             </div>
-
             <div className="mt-6 flex space-x-3">
               <Button
                 onClick={savePreferences}
@@ -655,7 +654,6 @@ const Settings = () => {
                   <option value="private">Private - Only me</option>
                 </select>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Data Retention
@@ -671,7 +669,6 @@ const Settings = () => {
                   <option value="indefinite">Indefinite</option>
                 </select>
               </div>
-
               <div className="space-y-4">
                 {[
                   { key: 'shareContactInfo', label: 'Share Contact Information', desc: 'Allow other reunion members to see your contact details' },
@@ -717,14 +714,14 @@ const Settings = () => {
         >
           <Card>
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Data Management</h2>
-            
+
             {/* Connection Status */}
             <div className="mb-6 p-4 bg-gray-50 rounded-lg">
               <h3 className="font-medium text-gray-900 mb-2">Connection Status</h3>
               <div className="flex items-center space-x-2">
                 <div className={`w-3 h-3 rounded-full ${isSupabaseAvailable ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
                 <span className="text-sm text-gray-600">
-                  {isSupabaseAvailable ? 'Connected to Supabase Backend' : 'Running in Demo Mode (Local Storage)'}
+                  {isSupabaseAvailable ? 'Connected to Supabase Backend' : 'Running in Local Storage Mode'}
                 </span>
               </div>
               {!isSupabaseAvailable && (
@@ -737,7 +734,6 @@ const Settings = () => {
             {/* Data Export/Import */}
             <div className="space-y-4">
               <h3 className="font-medium text-gray-900">Backup & Restore</h3>
-              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 border rounded-lg">
                   <h4 className="font-medium text-gray-900 mb-2">Export Data</h4>
@@ -753,7 +749,6 @@ const Settings = () => {
                     <span>Export Data</span>
                   </Button>
                 </div>
-
                 <div className="p-4 border rounded-lg">
                   <h4 className="font-medium text-gray-900 mb-2">Import Data</h4>
                   <p className="text-sm text-gray-600 mb-3">
