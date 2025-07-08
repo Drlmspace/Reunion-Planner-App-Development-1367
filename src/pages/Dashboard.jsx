@@ -38,29 +38,14 @@ const Dashboard = () => {
   };
 
   const quickStats = [
-    {
-      label: 'Total Reunions',
-      value: reunions.length,
-      icon: FiUsers,
-      color: 'text-blue-600'
-    },
-    {
-      label: 'Active Planning',
-      value: currentReunion ? 1 : 0,
-      icon: FiClock,
-      color: 'text-orange-600'
-    },
-    {
-      label: 'Completed',
-      value: 0,
-      icon: FiCheckCircle,
-      color: 'text-green-600'
-    },
-    {
-      label: 'Budget Status',
-      value: budgetData.remaining >= 0 ? `$${budgetData.remaining} left` : `$${Math.abs(budgetData.remaining)} over`,
-      icon: FiDollarSign,
-      color: budgetData.remaining >= 0 ? 'text-green-600' : 'text-red-600'
+    { label: 'Total Reunions', value: reunions.length, icon: FiUsers, color: 'text-blue-600' },
+    { label: 'Active Planning', value: currentReunion ? 1 : 0, icon: FiClock, color: 'text-orange-600' },
+    { label: 'Completed', value: 0, icon: FiCheckCircle, color: 'text-green-600' },
+    { 
+      label: 'Budget Status', 
+      value: budgetData.remaining >= 0 ? `$${budgetData.remaining} left` : `$${Math.abs(budgetData.remaining)} over`, 
+      icon: FiDollarSign, 
+      color: budgetData.remaining >= 0 ? 'text-green-600' : 'text-red-600' 
     }
   ];
 
@@ -75,12 +60,12 @@ const Dashboard = () => {
       toast.error('Please enter a reunion title');
       return;
     }
-
+    
     if (!newReunion.type) {
       toast.error('Please select a reunion type');
       return;
     }
-
+    
     try {
       const { data, error } = await createReunion(newReunion);
       
@@ -88,12 +73,12 @@ const Dashboard = () => {
         toast.error('Failed to create reunion: ' + error.message);
         return;
       }
-
+      
       // Set the newly created reunion as current
       if (data) {
         setCurrentReunion(data);
       }
-
+      
       // Reset form and close modal
       setNewReunion({
         title: '',
@@ -134,7 +119,11 @@ const Dashboard = () => {
               </div>
             </div>
             <Link to="/chapters/date-budget">
-              <Button variant="outline" size="small" className="text-red-600 border-red-300 hover:bg-red-50">
+              <Button
+                variant="outline"
+                size="small"
+                className="text-red-600 border-red-300 hover:bg-red-50"
+              >
                 <span className="flex items-center space-x-1">
                   <span>Review Budget</span>
                   <SafeIcon icon={FiArrowRight} />
@@ -153,7 +142,7 @@ const Dashboard = () => {
             Welcome back! Here's what's happening with your reunion planning.
           </p>
         </div>
-        <Button 
+        <Button
           onClick={() => setShowCreateForm(true)}
           className="flex items-center space-x-2"
           disabled={loading}
@@ -186,7 +175,6 @@ const Dashboard = () => {
                 <SafeIcon icon={FiX} />
               </Button>
             </div>
-
             <div className="space-y-4">
               <Input
                 label="Reunion Title"
@@ -196,7 +184,6 @@ const Dashboard = () => {
                 required
                 disabled={loading}
               />
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Reunion Type
@@ -214,7 +201,6 @@ const Dashboard = () => {
                   <option value="other">Other</option>
                 </select>
               </div>
-
               <Input
                 label="Planned Date (Optional)"
                 type="date"
@@ -222,7 +208,6 @@ const Dashboard = () => {
                 onChange={(e) => setNewReunion({ ...newReunion, planned_date: e.target.value })}
                 disabled={loading}
               />
-
               <Input
                 label="Description (Optional)"
                 value={newReunion.description}
@@ -231,7 +216,6 @@ const Dashboard = () => {
                 disabled={loading}
               />
             </div>
-
             <div className="flex space-x-3 mt-6">
               <Button
                 variant="outline"
@@ -310,6 +294,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+
           <div className="space-y-3">
             <h3 className="font-medium text-gray-900">Category Breakdown</h3>
             {budgetData.categories.map((category, index) => (
@@ -352,10 +337,7 @@ const Dashboard = () => {
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600">Date:</span>
                 <span className="font-medium">
-                  {currentReunion.planned_date 
-                    ? new Date(currentReunion.planned_date).toLocaleDateString() 
-                    : 'Not set'
-                  }
+                  {currentReunion.planned_date ? new Date(currentReunion.planned_date).toLocaleDateString() : 'Not set'}
                 </span>
               </div>
               <div className="pt-4 border-t">
@@ -372,11 +354,7 @@ const Dashboard = () => {
             <div className="text-center py-8">
               <SafeIcon icon={FiCalendar} className="text-4xl text-gray-300 mb-4" />
               <p className="text-gray-500 mb-4">No reunion selected</p>
-              <Button 
-                variant="outline" 
-                size="small"
-                onClick={() => setShowCreateForm(true)}
-              >
+              <Button variant="outline" size="small" onClick={() => setShowCreateForm(true)}>
                 Create Your First Reunion
               </Button>
             </div>
@@ -447,10 +425,7 @@ const Dashboard = () => {
               <p className="text-gray-700 mb-4">
                 Help us make the Reunion Planner better by sharing your thoughts, suggestions, or reporting any issues you've encountered.
               </p>
-              <Button 
-                onClick={openFeedbackForm} 
-                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700"
-              >
+              <Button onClick={openFeedbackForm} className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700">
                 <span>Submit Feedback</span>
                 <SafeIcon icon={FiArrowRight} />
               </Button>

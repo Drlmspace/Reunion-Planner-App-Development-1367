@@ -1,34 +1,34 @@
 import { createClient } from '@supabase/supabase-js'
 
 // Get environment variables (these should be set in your deployment environment)
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://ifpirxmbzfcyyihucyhj.supabase.co'
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlmcGlyeG1iemZjeXlpaHVjeWhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwMDMyNTYsImV4cCI6MjA2NzU3OTI1Nn0.jt5xx7InveCwrJWVyiHUbgtJB3cNC129ZaXTFxTTIA0'
 
 // Check if we have valid Supabase credentials
-const hasValidCredentials = 
-  supabaseUrl && 
-  supabaseAnonKey && 
-  supabaseUrl.includes('.supabase.co') && 
-  supabaseAnonKey.length > 50
+const hasValidCredentials = supabaseUrl && supabaseAnonKey && 
+                           supabaseUrl.includes('.supabase.co') && 
+                           supabaseAnonKey.length > 50
 
 // Create Supabase client - always create it for proper initialization
-export const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
-  }
-}) : createClient(
-  'https://placeholder.supabase.co', 
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxMjM0NTYsImV4cCI6MTk2MDY5OTQ1Nn0.placeholder',
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-      detectSessionInUrl: false
-    }
-  }
-)
+export const supabase = hasValidCredentials 
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+      }
+    })
+  : createClient(
+      'https://placeholder.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxMjM0NTYsImV4cCI6MTk2MDY5OTQ1Nn0.placeholder',
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+          detectSessionInUrl: false
+        }
+      }
+    )
 
 // Export a flag to check if Supabase is available
 export const isSupabaseAvailable = hasValidCredentials
@@ -45,7 +45,6 @@ export const TABLES = {
   VENUES: 'venues',
   EVENTS: 'events',
   COMMUNICATIONS: 'communications',
-  RSVPS: 'rsvps',
   TRAVEL_INFO: 'travel_info',
   LODGING_OPTIONS: 'lodging_options',
   FOOD_PLANS: 'food_plans',
@@ -147,22 +146,6 @@ export const api = {
     }
   },
 
-  // RSVP operations
-  rsvps: {
-    getAll: async (reunionId) => {
-      if (!isSupabaseAvailable) throw new Error('Supabase not available')
-      return supabase.from(TABLES.RSVPS).select('*').eq('reunion_id', reunionId)
-    },
-    create: async (rsvp) => {
-      if (!isSupabaseAvailable) throw new Error('Supabase not available')
-      return supabase.from(TABLES.RSVPS).insert(rsvp).select().single()
-    },
-    update: async (id, updates) => {
-      if (!isSupabaseAvailable) throw new Error('Supabase not available')
-      return supabase.from(TABLES.RSVPS).update(updates).eq('id', id).select().single()
-    }
-  },
-
   // Vendor operations
   vendors: {
     getAll: async (reunionId) => {
@@ -180,6 +163,22 @@ export const api = {
     delete: async (id) => {
       if (!isSupabaseAvailable) throw new Error('Supabase not available')
       return supabase.from(TABLES.VENDORS).delete().eq('id', id)
+    }
+  },
+
+  // Communication operations
+  communications: {
+    getMessages: async (reunionId) => {
+      if (!isSupabaseAvailable) throw new Error('Supabase not available')
+      return supabase.from(TABLES.COMMUNICATIONS).select('*').eq('reunion_id', reunionId).order('created_at', { ascending: false })
+    },
+    createMessage: async (message) => {
+      if (!isSupabaseAvailable) throw new Error('Supabase not available')
+      return supabase.from(TABLES.COMMUNICATIONS).insert(message).select().single()
+    },
+    deleteMessage: async (id) => {
+      if (!isSupabaseAvailable) throw new Error('Supabase not available')
+      return supabase.from(TABLES.COMMUNICATIONS).delete().eq('id', id)
     }
   }
 }
