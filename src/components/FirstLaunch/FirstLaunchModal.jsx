@@ -34,6 +34,13 @@ const FirstLaunchModal = ({ onAccept, onDecline }) => {
     window.open('https://app.getterms.io/policy/sBtei/acceptable-use', '_blank', 'noopener,noreferrer');
   };
 
+  // Add a reset function for testing
+  const resetTermsForTesting = () => {
+    localStorage.removeItem('termsAccepted');
+    localStorage.removeItem('termsAcceptedDate');
+    window.location.reload();
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -192,6 +199,16 @@ const FirstLaunchModal = ({ onAccept, onDecline }) => {
           >
             Cancel
           </Button>
+          
+          {/* Testing Helper - Remove in production */}
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+            <button
+              onClick={resetTermsForTesting}
+              className="text-xs text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            >
+              Reset Terms (for testing)
+            </button>
+          </div>
         </div>
       </motion.div>
     </div>
