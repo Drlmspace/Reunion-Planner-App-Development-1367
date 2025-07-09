@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { format } from 'date-fns';
+import React, {useState, useEffect} from 'react';
+import {motion} from 'framer-motion';
+import {format} from 'date-fns';
 import Button from '../UI/Button';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../../common/SafeIcon';
 
-const { FiShield, FiAlertCircle, FiMail, FiInfo } = FiIcons;
+const {FiShield, FiAlertCircle, FiMail, FiInfo} = FiIcons;
 
-const PrivacyNotice = ({ onAccept, onDecline }) => {
+const PrivacyNotice = ({onAccept, onDecline}) => {
   const [isVisible, setIsVisible] = useState(true);
   const currentDate = format(new Date(), 'MMMM d, yyyy');
-  const appName = 'Reunion Planner';
+  const appName = 'The Reunion Curator';
 
   const handleAccept = () => {
     localStorage.setItem('privacyNoticeAccepted', 'true');
@@ -28,9 +28,9 @@ const PrivacyNotice = ({ onAccept, onDecline }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
+      <motion.div
+        initial={{opacity: 0, scale: 0.9}}
+        animate={{opacity: 1, scale: 1}}
         className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
       >
         {/* Header */}
@@ -112,16 +112,16 @@ const PrivacyNotice = ({ onAccept, onDecline }) => {
         {/* Action Buttons */}
         <div className="p-6 bg-gray-50 dark:bg-gray-700/50 rounded-b-xl border-t border-gray-200 dark:border-gray-600">
           <div className="flex flex-col-reverse sm:flex-row sm:justify-between sm:space-x-4 space-y-4 space-y-reverse sm:space-y-0">
-            <Button 
-              variant="outline" 
-              fullWidth 
+            <Button
+              variant="outline"
+              fullWidth
               onClick={handleDecline}
               className="border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
             >
               Cancel
             </Button>
-            <Button 
-              fullWidth 
+            <Button
+              fullWidth
               onClick={handleAccept}
               className="bg-primary-600 hover:bg-primary-700"
             >
@@ -134,9 +134,9 @@ const PrivacyNotice = ({ onAccept, onDecline }) => {
             <div className="flex flex-col sm:flex-row justify-between space-y-2 sm:space-y-0">
               <div className="flex items-center space-x-2">
                 <SafeIcon icon={FiInfo} />
-                <a 
-                  href="https://app.getterms.io/policy/sBtei/app-privacy" 
-                  target="_blank" 
+                <a
+                  href="https://app.getterms.io/policy/sBtei/app-privacy"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary-600 dark:text-primary-400 hover:underline"
                 >
@@ -151,11 +151,11 @@ const PrivacyNotice = ({ onAccept, onDecline }) => {
             <div className="mt-2 flex items-center space-x-2">
               <SafeIcon icon={FiMail} />
               <span>Contact for privacy questions: </span>
-              <a 
-                href="mailto:privacy@reunionplanner.app" 
+              <a
+                href="mailto:privacy@reunioncurator.app"
                 className="text-primary-600 dark:text-primary-400 hover:underline"
               >
-                privacy@reunionplanner.app
+                privacy@reunioncurator.app
               </a>
             </div>
           </div>

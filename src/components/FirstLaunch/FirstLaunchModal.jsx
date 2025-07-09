@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, {useState} from 'react';
+import {motion} from 'framer-motion';
 import Button from '../UI/Button';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../../common/SafeIcon';
 
-const { FiShield, FiSmartphone, FiExternalLink, FiX, FiMonitor } = FiIcons;
+const {FiShield, FiSmartphone, FiExternalLink, FiX, FiMonitor} = FiIcons;
 
-const FirstLaunchModal = ({ onAccept, onDecline }) => {
+const FirstLaunchModal = ({onAccept, onDecline}) => {
   const [isVisible, setIsVisible] = useState(true);
 
   const handleAccept = () => {
@@ -46,9 +46,9 @@ const FirstLaunchModal = ({ onAccept, onDecline }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[9999] p-4">
       <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        initial={{opacity: 0, scale: 0.9, y: 20}}
+        animate={{opacity: 1, scale: 1, y: 0}}
+        transition={{duration: 0.3}}
         className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
       >
         {/* Header */}
@@ -58,7 +58,7 @@ const FirstLaunchModal = ({ onAccept, onDecline }) => {
               <SafeIcon icon={FiShield} className="text-3xl text-blue-600 dark:text-blue-400" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Welcome to Reunion Planner - Important Use Information
+              Welcome to The Reunion Curator - Important Use Information
             </h1>
             <p className="text-gray-600 dark:text-gray-300 text-sm">
               Before you begin, please review our data practices
@@ -199,7 +199,7 @@ const FirstLaunchModal = ({ onAccept, onDecline }) => {
           >
             Cancel
           </Button>
-          
+
           {/* Testing Helper - Remove in production */}
           <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
             <button

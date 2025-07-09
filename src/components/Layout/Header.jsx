@@ -1,20 +1,21 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { useReunion } from '../../contexts/ReunionContext';
-import { useTheme } from '../../contexts/ThemeContext';
+import React, {useState} from 'react';
+import {Link} from 'react-router-dom';
+import {useAuth} from '../../contexts/AuthContext';
+import {useReunion} from '../../contexts/ReunionContext';
+import {useTheme} from '../../contexts/ThemeContext';
 import Button from '../UI/Button';
 import Input from '../UI/Input';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../../common/SafeIcon';
-import { motion } from 'framer-motion';
+import {motion} from 'framer-motion';
 
-const { FiUser, FiLogOut, FiSettings, FiEdit3, FiSave, FiX, FiShield, FiMoon, FiSun } = FiIcons;
+const {FiUser, FiLogOut, FiSettings, FiEdit3, FiSave, FiX, FiShield, FiMoon, FiSun} = FiIcons;
 
 const Header = () => {
-  const { user, signOut } = useAuth();
-  const { currentReunion, updateReunion } = useReunion();
-  const { theme, toggleTheme, isDark } = useTheme();
+  const {user, signOut} = useAuth();
+  const {currentReunion, updateReunion} = useReunion();
+  const {theme, toggleTheme, isDark} = useTheme();
+
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingDate, setIsEditingDate] = useState(false);
   const [editTitle, setEditTitle] = useState(currentReunion?.title || '');
@@ -22,14 +23,14 @@ const Header = () => {
 
   const handleSaveTitle = async () => {
     if (editTitle.trim() && currentReunion) {
-      await updateReunion(currentReunion.id, { title: editTitle });
+      await updateReunion(currentReunion.id, {title: editTitle});
       setIsEditingTitle(false);
     }
   };
 
   const handleSaveDate = async () => {
     if (editDate && currentReunion) {
-      await updateReunion(currentReunion.id, { planned_date: editDate });
+      await updateReunion(currentReunion.id, {planned_date: editDate});
       setIsEditingDate(false);
     }
   };
@@ -51,8 +52,8 @@ const Header = () => {
           <div className="flex-1">
             {isEditingTitle ? (
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{opacity: 0, y: -10}}
+                animate={{opacity: 1, y: 0}}
                 className="flex items-center space-x-3"
               >
                 <Input
@@ -90,8 +91,8 @@ const Header = () => {
               <div className="mt-1">
                 {isEditingDate ? (
                   <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{opacity: 0, y: -10}}
+                    animate={{opacity: 1, y: 0}}
                     className="flex items-center space-x-3"
                   >
                     <input
