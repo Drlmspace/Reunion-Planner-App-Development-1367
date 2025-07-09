@@ -273,6 +273,10 @@ const Settings = () => {
     window.open('https://app.getterms.io/view/sBtei/terms-of-service/en-us', '_blank', 'noopener,noreferrer');
   };
 
+  const openAcceptableUsePolicy = () => {
+    window.open('https://app.getterms.io/policy/sBtei/acceptable-use', '_blank', 'noopener,noreferrer');
+  };
+
   // Get terms acceptance info
   const termsAcceptanceDate = getTermsAcceptanceDate();
 
@@ -770,7 +774,7 @@ const Settings = () => {
             {/* Policy Links */}
             <div className="space-y-4 mb-6">
               <h3 className="font-medium text-gray-900 dark:text-white">Review Our Policies</h3>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <button
                   onClick={openPrivacyPolicy}
                   className="flex items-center justify-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -785,6 +789,14 @@ const Settings = () => {
                 >
                   <SafeIcon icon={FiShield} />
                   <span>Terms of Service</span>
+                  <SafeIcon icon={FiExternalLink} className="text-xs" />
+                </button>
+                <button
+                  onClick={openAcceptableUsePolicy}
+                  className="flex items-center justify-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <SafeIcon icon={FiShield} />
+                  <span>Acceptable Use</span>
                   <SafeIcon icon={FiExternalLink} className="text-xs" />
                 </button>
               </div>
