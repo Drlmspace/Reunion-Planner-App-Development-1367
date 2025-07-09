@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useReunion } from '../contexts/ReunionContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { isSupabaseAvailable } from '../lib/supabase';
+import { getTermsAcceptanceDate, revokeTermsAcceptance } from '../utils/termsChecker';
 import Card from '../components/UI/Card';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
@@ -11,21 +12,10 @@ import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../common/SafeIcon';
 import toast from 'react-hot-toast';
 
-const {
-  FiSettings,
-  FiUser,
-  FiBell,
-  FiDatabase,
-  FiEye,
-  FiSave,
-  FiTrash2,
-  FiDownload,
-  FiUpload,
-  FiRefreshCw,
-  FiShield,
-  FiMoon,
-  FiSun,
-  FiGlobe
+const { 
+  FiSettings, FiUser, FiBell, FiDatabase, FiEye, FiSave, FiTrash2, 
+  FiDownload, FiUpload, FiRefreshCw, FiShield, FiMoon, FiSun, 
+  FiGlobe, FiExternalLink, FiAlertTriangle 
 } = FiIcons;
 
 const Settings = () => {
@@ -155,7 +145,6 @@ const Settings = () => {
 
     // Apply theme change
     setTheme(preferences.theme);
-
     toast.success('Preferences saved successfully!');
   };
 
@@ -192,7 +181,6 @@ const Settings = () => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-
     toast.success('Data exported successfully!');
   };
 
@@ -223,25 +211,14 @@ const Settings = () => {
     if (window.confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
       // Clear specific reunion planner data
       const keysToRemove = [
-        'demoReunions',
-        'currentReunion',
-        'userProfile',
-        'theme',
-        'currency',
-        'dateFormat',
-        'language',
-        'autoSave',
-        'emailNotifications',
-        'pushNotifications',
-        'weeklyDigest',
-        'taskReminders',
-        'budgetAlerts',
-        'rsvpUpdates'
+        'demoReunions', 'currentReunion', 'userProfile', 'theme', 'currency', 
+        'dateFormat', 'language', 'autoSave', 'emailNotifications', 'pushNotifications',
+        'weeklyDigest', 'taskReminders', 'budgetAlerts', 'rsvpUpdates'
       ];
-
+      
       keysToRemove.forEach(key => localStorage.removeItem(key));
       toast.success('All data cleared successfully! Please refresh the page.');
-
+      
       // Refresh after a short delay
       setTimeout(() => {
         window.location.reload();
@@ -277,10 +254,27 @@ const Settings = () => {
 
       // Reset theme to light
       setTheme('light');
-
       toast.success('Settings reset to defaults');
     }
   };
+
+  const resetTermsAcceptance = () => {
+    if (window.confirm('This will require you to accept the terms again on next app launch. Continue?')) {
+      revokeTermsAcceptance();
+      toast.success('Terms acceptance reset. You will see the agreement screen on next launch.');
+    }
+  };
+
+  const openPrivacyPolicy = () => {
+    window.open('https://app.getterms.io/policy/sBtei/app-privacy', '_blank', 'noopener,noreferrer');
+  };
+
+  const openTermsOfService = () => {
+    window.open('https://app.getterms.io/view/sBtei/terms-of-service/en-us', '_blank', 'noopener,noreferrer');
+  };
+
+  // Get terms acceptance info
+  const termsAcceptanceDate = getTermsAcceptanceDate();
 
   return (
     <div className="space-y-8">
@@ -341,11 +335,13 @@ const Settings = () => {
                 value={accountData.firstName}
                 onChange={(e) => setAccountData({ ...accountData, firstName: e.target.value })}
               />
+
               <Input
                 label="Last Name"
                 value={accountData.lastName}
                 onChange={(e) => setAccountData({ ...accountData, lastName: e.target.value })}
               />
+
               <Input
                 label="Email"
                 type="email"
@@ -354,6 +350,7 @@ const Settings = () => {
                 disabled={isSupabaseAvailable}
                 helper={isSupabaseAvailable ? "Email cannot be changed when using Supabase backend" : ""}
               />
+
               <Input
                 label="Phone"
                 type="tel"
@@ -361,6 +358,7 @@ const Settings = () => {
                 onChange={(e) => setAccountData({ ...accountData, phone: e.target.value })}
                 placeholder="Your phone number"
               />
+
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Time Zone
@@ -380,6 +378,7 @@ const Settings = () => {
                 </select>
               </div>
             </div>
+
             <div className="mt-6">
               <Button
                 onClick={saveAccountSettings}
@@ -413,6 +412,7 @@ const Settings = () => {
                     value={reunionSettings.title}
                     onChange={(e) => setReunionSettings({ ...reunionSettings, title: e.target.value })}
                   />
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Reunion Type
@@ -429,12 +429,14 @@ const Settings = () => {
                       <option value="other">Other</option>
                     </select>
                   </div>
+
                   <Input
                     label="Planned Date"
                     type="date"
                     value={reunionSettings.plannedDate}
                     onChange={(e) => setReunionSettings({ ...reunionSettings, plannedDate: e.target.value })}
                   />
+
                   <Input
                     label="Max Attendees"
                     type="number"
@@ -443,6 +445,7 @@ const Settings = () => {
                     placeholder="Leave blank for unlimited"
                   />
                 </div>
+
                 <div>
                   <Input
                     label="Description"
@@ -451,6 +454,7 @@ const Settings = () => {
                     placeholder="Describe your reunion..."
                   />
                 </div>
+
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2">
                     <input
@@ -464,6 +468,7 @@ const Settings = () => {
                       Allow attendees to bring guests
                     </label>
                   </div>
+
                   <div className="flex items-center space-x-2">
                     <input
                       type="checkbox"
@@ -477,6 +482,7 @@ const Settings = () => {
                     </label>
                   </div>
                 </div>
+
                 <Button
                   onClick={saveReunionSettings}
                   loading={loading}
@@ -531,6 +537,7 @@ const Settings = () => {
                 </div>
               ))}
             </div>
+
             <div className="mt-6">
               <Button
                 onClick={saveNotificationSettings}
@@ -583,6 +590,7 @@ const Settings = () => {
                   </button>
                 </div>
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Currency
@@ -599,6 +607,7 @@ const Settings = () => {
                   <option value="AUD">AUD ($)</option>
                 </select>
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Date Format
@@ -613,6 +622,7 @@ const Settings = () => {
                   <option value="YYYY-MM-DD">YYYY-MM-DD</option>
                 </select>
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Language
@@ -629,6 +639,7 @@ const Settings = () => {
                 </select>
               </div>
             </div>
+
             <div className="mt-6">
               <div className="flex items-center space-x-2">
                 <input
@@ -643,6 +654,7 @@ const Settings = () => {
                 </label>
               </div>
             </div>
+
             <div className="mt-6 flex space-x-3">
               <Button
                 onClick={savePreferences}
@@ -688,6 +700,7 @@ const Settings = () => {
                   <option value="private">Private - Only me</option>
                 </select>
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Data Retention
@@ -703,6 +716,7 @@ const Settings = () => {
                   <option value="indefinite">Indefinite</option>
                 </select>
               </div>
+
               <div className="space-y-4">
                 {[
                   { key: 'shareContactInfo', label: 'Share Contact Information', desc: 'Allow other reunion members to see your contact details' },
@@ -726,6 +740,7 @@ const Settings = () => {
                 ))}
               </div>
             </div>
+
             <div className="mt-6">
               <Button
                 onClick={savePrivacySettings}
@@ -733,6 +748,61 @@ const Settings = () => {
               >
                 <SafeIcon icon={FiSave} />
                 <span>Save Privacy Settings</span>
+              </Button>
+            </div>
+          </Card>
+
+          {/* Terms & Privacy Management */}
+          <Card>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Terms & Privacy Management</h2>
+            
+            {/* Terms Acceptance Status */}
+            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Terms Acceptance Status</h3>
+              <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+                <p>• Status: <strong>Accepted</strong></p>
+                {termsAcceptanceDate && (
+                  <p>• Accepted on: <strong>{termsAcceptanceDate.toLocaleDateString()}</strong></p>
+                )}
+              </div>
+            </div>
+
+            {/* Policy Links */}
+            <div className="space-y-4 mb-6">
+              <h3 className="font-medium text-gray-900 dark:text-white">Review Our Policies</h3>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={openPrivacyPolicy}
+                  className="flex items-center justify-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <SafeIcon icon={FiShield} />
+                  <span>Privacy Policy</span>
+                  <SafeIcon icon={FiExternalLink} className="text-xs" />
+                </button>
+                <button
+                  onClick={openTermsOfService}
+                  className="flex items-center justify-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <SafeIcon icon={FiShield} />
+                  <span>Terms of Service</span>
+                  <SafeIcon icon={FiExternalLink} className="text-xs" />
+                </button>
+              </div>
+            </div>
+
+            {/* Reset Terms Acceptance */}
+            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+              <h3 className="font-medium text-amber-900 dark:text-amber-100 mb-2">Reset Terms Acceptance</h3>
+              <p className="text-sm text-amber-800 dark:text-amber-200 mb-4">
+                This will require you to accept the terms and conditions again when you next launch the app.
+              </p>
+              <Button
+                onClick={resetTermsAcceptance}
+                variant="outline"
+                className="flex items-center space-x-2 border-amber-300 text-amber-700 hover:bg-amber-50"
+              >
+                <SafeIcon icon={FiAlertTriangle} />
+                <span>Reset Terms Acceptance</span>
               </Button>
             </div>
           </Card>
@@ -748,6 +818,7 @@ const Settings = () => {
         >
           <Card>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Data Management</h2>
+
             {/* Connection Status */}
             <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <h3 className="font-medium text-gray-900 dark:text-white mb-2">Connection Status</h3>
@@ -782,6 +853,7 @@ const Settings = () => {
                     <span>Export Data</span>
                   </Button>
                 </div>
+
                 <div className="p-4 border dark:border-gray-600 rounded-lg">
                   <h4 className="font-medium text-gray-900 dark:text-white mb-2">Import Data</h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
@@ -815,6 +887,9 @@ const Settings = () => {
                 <p>• Storage Used: ~{Math.round(JSON.stringify(reunions).length / 1024)} KB</p>
                 <p>• Last Backup: {localStorage.getItem('lastBackup') || 'Never'}</p>
                 <p>• Current Theme: {isDark ? 'Dark' : 'Light'} Mode</p>
+                {termsAcceptanceDate && (
+                  <p>• Terms Accepted: {termsAcceptanceDate.toLocaleDateString()}</p>
+                )}
               </div>
             </div>
 
